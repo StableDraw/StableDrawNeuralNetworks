@@ -1,0 +1,14 @@
+*.pt
+*.ckpt
+*.pth
+*token.txt
+*detect_language_key.txt
+*.key
+*.crt
+*.safetensors
+Neural_network_processing/log
+Stable_draw_classifier_v1/Dataset_100_v1
+Stable_draw_classifier_v1/Dataset_v1
+Stable_draw_classifier_v1/Dataset_350_v2
+Stable_draw_classifier_v1/Dataset_v2
+*.bin
