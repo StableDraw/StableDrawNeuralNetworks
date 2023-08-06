@@ -220,9 +220,8 @@ def U2NET_Delete_background(binary_data, params):
         buf = BytesIO()
         orig.save(buf, format = "PNG")
         result_binary_data = buf.getvalue()
-        (w, h) = orig.size
         torch.cuda.empty_cache()
-    return w, h, result_binary_data
+    return result_binary_data
 
 def DIS_Delete_background(binary_data, params):
     checkpoint_list = [
@@ -250,13 +249,12 @@ def DIS_Delete_background(binary_data, params):
     buf = BytesIO()
     orig.save(buf, format = "PNG")
     result_binary_data = buf.getvalue()
-    (w, h) = orig.size
     torch.cuda.empty_cache()
-    return w, h, result_binary_data
+    return result_binary_data
 
 def Delete_background(binary_data, params):
     if params["model"] == "U2NET":
-        w, h, result_binary_data = U2NET_Delete_background(binary_data, params)
+        result_binary_data = U2NET_Delete_background(binary_data, params)
     else:
-        w, h, result_binary_data = DIS_Delete_background(binary_data, params)
-    return w, h, result_binary_data
+        result_binary_data = DIS_Delete_background(binary_data, params)
+    return result_binary_data

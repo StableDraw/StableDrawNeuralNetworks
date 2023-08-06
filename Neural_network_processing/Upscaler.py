@@ -89,7 +89,6 @@ def Upscale(binary_data, args):
         print("Ошибка", error, "\nЕсли у вас появляется ошибка \"CUDA out of memory\", попробуйте постаивть параметру \"tile\" меньшее значение")
     else:
         im_buf_arr = cv2.imencode(".png", output)[1]
-        h, w, _ = output.shape
         result_binary_data = im_buf_arr.tobytes()
     torch.cuda.empty_cache()
-    return w, h, result_binary_data
+    return result_binary_data

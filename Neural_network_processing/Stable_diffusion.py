@@ -36,9 +36,9 @@ def load_model_from_config(config, ckpt, verbose = False):
     model = instantiate_from_config(config.model)
     m, u = model.load_state_dict(sd, strict = False)
     if len(m) > 0 and verbose:
-        print("пропущенные параметры:\n", m)
+        print("Пропущенные параметры:\n", m)
     if len(u) > 0 and verbose:
-        print("некорректные параматры:")
+        print("Некорректные параматры:")
         print(u)
     model.cuda()
     model.eval()
@@ -115,7 +115,7 @@ def Stable_diffusion_text_to_image(prompt, opt):
             img.close
     print("Обработка успешно завершена")
     torch.cuda.empty_cache()
-    return w, h, b_data
+    return b_data
 
 def Stable_diffusion_image_to_image(binary_data, prompt, opt):
     checkpoint_path = 'models\\ldm\\stable-diffusion\\img2img\\'
@@ -160,13 +160,12 @@ def Stable_diffusion_image_to_image(binary_data, prompt, opt):
                 samples = sampler.decode(z_enc, c, t_enc, unconditional_guidance_scale = opt['scale'], unconditional_conditioning = uc, )
                 x_sample = 255. * rearrange(torch.clamp((model.decode_first_stage(samples) + 1.0) / 2.0, min = 0.0, max = 1.0)[0].cpu().numpy(), 'c h w -> h w c')
                 img = PIL.Image.fromarray(x_sample.astype(numpy.uint8))
-                w, h = img.size
                 buf = io.BytesIO()
                 img.save(buf, format = "PNG")
                 b_data = buf.getvalue()
                 img.close
     torch.cuda.empty_cache()
-    return w, h, b_data
+    return b_data
 
 def Stable_diffusion_depth_to_image(binary_data, prompt, opt):
     torch.set_grad_enabled(False)
@@ -227,13 +226,12 @@ def Stable_diffusion_depth_to_image(binary_data, prompt, opt):
         samples = sampler.decode(z_enc, cond, t_enc, unconditional_guidance_scale = opt["scale"], unconditional_conditioning = uc_full, )
         x_sample = 255. * rearrange(torch.clamp((model.decode_first_stage(samples) + 1.0) / 2.0, min = 0.0, max = 1.0)[0].cpu().numpy(), 'c h w -> h w c')
     image = PIL.Image.fromarray(x_sample.astype(numpy.uint8))
-    w, h = image.size
     buf = io.BytesIO()
     image.save(buf, format = "PNG")
     b_data = buf.getvalue()
     image.close
     torch.cuda.empty_cache()
-    return w, h, b_data
+    return b_data
 
 def Stable_diffusion_inpainting(binary_data, mask_data, prompt, opt):
     torch.set_grad_enabled(False)
@@ -301,7 +299,7 @@ def Stable_diffusion_inpainting(binary_data, mask_data, prompt, opt):
     b_data = buf.getvalue()
     image.close
     torch.cuda.empty_cache()
-    return w, h, b_data
+    return b_data
 
 def Stable_diffusion_upscaler(binary_data, prompt, opt):
     if opt["outscale"] != 4:
@@ -374,13 +372,12 @@ def Stable_diffusion_upscaler(binary_data, prompt, opt):
     result = result.cpu().numpy().transpose(0, 2, 3, 1) * 255
     print(f"размер апскейленого изображения: {result.shape}")
     image = [PIL.Image.fromarray(img.astype(numpy.uint8)) for img in result][0]
-    w, h = image.size
     buf = io.BytesIO()
     image.save(buf, format = "PNG")
     b_data = buf.getvalue()
     image.close
     torch.cuda.empty_cache()
-    return w, h, b_data
+    return b_data
 
 class StableDiffusionLatentUpscalePipeline(DiffusionPipeline):
     def __init__(self, vae: AutoencoderKL, text_encoder: CLIPTextModel, tokenizer: CLIPTokenizer, unet: UNet2DConditionModel, scheduler: EulerDiscreteScheduler,):
@@ -541,13 +538,12 @@ class StableDiffusionLatentUpscalePipeline(DiffusionPipeline):
         if not return_dict:
             return (image,)
         image = image[0]
-        w, h = image.size
         buf = io.BytesIO()
         image.save(buf, format = "PNG")
         b_data = buf.getvalue()
         image.close
         torch.cuda.empty_cache()
-        return w, h, b_data
+        return b_data
 
 def Stable_diffusion_upscaler_xX(init_img_binary_data, caption, params):
     upscaler_pipeline = StableDiffusionLatentUpscalePipeline

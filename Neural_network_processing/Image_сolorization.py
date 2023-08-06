@@ -359,12 +359,11 @@ def get_transformed_image(binary_data, filtr, params):
             for _ in tqdm(range(params["steps"])):
                 result = filtr.filter(result, result, render_factor = params["render_factor"], post_process = params["post_process"])
         result = increase_color_saturation(image = result, brite_k = params["clr_saturation_factor"], min_brite = params["line_color_limit"])
-    w, h = result.size
     buf = io.BytesIO()
     result.save(buf, format = "PNG")
     b_data = buf.getvalue()
     result.close
-    return w, h, b_data
+    return b_data
 
 def get_image_filtr(weights_name: str, artistic: bool = True, stats: tuple = imagenet_stats):
     if artistic:
@@ -392,5 +391,5 @@ def Image_сolorizer(input_binary_image, params):
         "ColorizeArtistic_gen_Sketch2Gray"
     ]
     filtr = get_image_filtr(weights_name = checkpoint_list[params["ckpt"]], artistic = params["artistic"], stats = ([0.7137, 0.6628, 0.6519], [0.2970, 0.3017, 0.2979]))
-    w, h, binary_image = get_transformed_image(input_binary_image, filtr = filtr, params = params)
-    return w, h, binary_image
+    binary_image = get_transformed_image(input_binary_image, filtr = filtr, params = params)
+    return binary_image

@@ -9,11 +9,11 @@ import base64
 import asyncio
 import requests
 import websockets
+import PIL
 from PIL import Image
 import translators
 from deep_translator import single_detection
 from dotenv import load_dotenv
-#import logging
 from Image_caption_generator import Gen_caption
 from Delete_background import Delete_background
 from Upscaler import Upscale
@@ -488,11 +488,13 @@ async def neural_processing(process, nprocess):
                 chain_id = send_message_to_tg(URL + "sendMessage?text=" + "Определён класс: " + classes[image_class] + ", " + subclasses[image_subclass] + "&reply_to_message_id=" + chain_id + "&chat_id=" + chat_id)
                 if (not task_type in ['f', 'a', 'o']) and ((user_settings["autobwcolorize"] and image_subclass == 1) or (user_settings["autoproclr"] == True and image_class == 4) or (user_settings["autoquickclr"] == True and image_class == 5)):
                     postview = str(base64.b64encode(init_img_binary_data).decode("utf-8"))
-                    w, h, init_img_binary_data = colorize(init_img_binary_data, image_class)
+                    init_img_binary_data = colorize(init_img_binary_data, image_class)
                     result_img = "colored_" + str(img_suf)
                     img_suf += 1
-                    with open(path_to_task_dir + "\\" + result_img + ".png", "wb") as f:
-                        f.write(init_img_binary_data)
+                    image = PIL.Image.open(io.BytesIO(init_img_binary_data)).convert("RGB")
+                    w, h = image.size
+                    image.save(path_to_task_dir + "\\" + result_img + ".png")
+                    image.close()
                     chain_id = send_document_to_tg(URL + "sendDocument?&reply_to_message_id=" + chain_id + "&chat_id=" + chat_id, { "document": (result_img + ".png", init_img_binary_data) })
 
             if task_type == 'c': #если нужно сгенерировать описание
@@ -610,7 +612,7 @@ async def neural_processing(process, nprocess):
                         params["strength"] = 0.8
 
 
-                    w, h, binary_data = Stable_diffusion_depth_to_image(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
+                    binary_data = Stable_diffusion_depth_to_image(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
                 elif Is_inpainting:
                     params = {
                         "ddim_steps": 50,           #Шаги DDIM, от 0 до 50
@@ -662,7 +664,7 @@ async def neural_processing(process, nprocess):
                         params["strength"] = 0.8
 
 
-                    w, h, binary_data = Stable_diffusion_inpainting(init_img_binary_data, mask_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла и параметры
+                    binary_data = Stable_diffusion_inpainting(init_img_binary_data, mask_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла и параметры
                 elif Is_upscale == True:
                     params = {
                         "ddim_steps": 50,           #Шаги DDIM, от 2 до 250
@@ -722,7 +724,7 @@ async def neural_processing(process, nprocess):
                         rbufer[2] *= outscale
                         rbufer[3] *= outscale
                         rbufer[4] *= outscale
-                    w, h, binary_data = Stable_diffusion_upscaler(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
+                    binary_data = Stable_diffusion_upscaler(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
                 elif Is_upscale_xX == True:
                     params = {
                         "ddim_steps": 20,           #Шаги DDIM, от 2 до 250
@@ -782,7 +784,7 @@ async def neural_processing(process, nprocess):
                         rbufer[2] *= outscale
                         rbufer[3] *= outscale
                         rbufer[4] *= outscale
-                    w, h, binary_data = Stable_diffusion_upscaler_xX(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
+                    binary_data = Stable_diffusion_upscaler_xX(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
                 else:
                     params = {
                         'ddim_steps': 50,             #количество шагов выборки ddim
@@ -834,10 +836,12 @@ async def neural_processing(process, nprocess):
                         params["strength"] = 0.7
 
 
-                    w, h, binary_data = Stable_diffusion_image_to_image(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
+                    binary_data = Stable_diffusion_image_to_image(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
                 result_img = final_file_name + "_" + str(img_suf)
-                with open(path_to_task_dir + "\\" + result_img + ".png", "wb") as f:
-                    f.write(binary_data)
+                image = PIL.Image.open(io.BytesIO(binary_data)).convert("RGB")
+                w, h = image.size
+                image.save(path_to_task_dir + "\\" + result_img + ".png")
+                image.close()
                 if need_restore == True: #если нужно восстановление
                     chain_id = send_document_to_tg(URL + "sendDocument?&reply_to_message_id=" + chain_id + "&chat_id=" + chat_id, {"document": ("c_" + result_img + ".png", binary_data)})
                     binary_data = Restore_Image(binary_data, rbufer, path_to_task_dir, result_img)
@@ -873,10 +877,12 @@ async def neural_processing(process, nprocess):
                     "input_size": [1024, 1024], # Входной пространственный размер модели, обычно используют одно и то же значение params["cache_size"], что означает, что мы больше не изменяем размер изображений
                     "crop_size": [1024, 1024]   # Размер случайно обрезки из ввода, обычно он меньше, чем params["cache_size"], например, [920, 920] для увеличения данных
                 }
-                w, h, binary_data = Delete_background(init_img_binary_data, params) #передаю путь к рабочей папке и имя файла
+                binary_data = Delete_background(init_img_binary_data, params) #передаю путь к рабочей папке и имя файла
                 result_img = final_file_name + "_" + str(img_suf)
-                with open(path_to_task_dir + "\\" + result_img + ".png", "wb") as f:
-                    f.write(binary_data)
+                image = PIL.Image.open(io.BytesIO(binary_data)).convert("RGB")
+                w, h = image.size
+                image.save(path_to_task_dir + "\\" + result_img + ".png")
+                image.close()
                 if need_restore == True: #если нужно восстановление
                     result_path = path_to_task_dir + "\\c_" + result_img
                     chain_id = send_document_to_tg(URL + "sendDocument?&reply_to_message_id=" + chain_id + "&chat_id=" + chat_id, {"document": ("c_" + result_img + ".png", binary_data)})
@@ -973,10 +979,12 @@ async def neural_processing(process, nprocess):
                 if user_settings["autofaceenchance"] == True:
                     params["face_enhance"] = True
                 outscale = params["outscale"]
-                w, h, binary_data = Upscale(init_img_binary_data, params) #передаю путь к рабочей папке
+                binary_data = Upscale(init_img_binary_data, params) #передаю путь к рабочей папке
                 result_img = final_file_name + "_" + str(img_suf)
-                with open(path_to_task_dir + "\\" + result_img + ".png", "wb") as f:
-                    f.write(binary_data)
+                image = PIL.Image.open(io.BytesIO(binary_data)).convert("RGB")
+                w, h = image.size
+                image.save(path_to_task_dir + "\\" + result_img + ".png")
+                image.close()
                 if need_restore == True: #если нужно восстановление
                     result_path = path_to_task_dir + "\\c_" + result_img
                     chain_id = send_document_to_tg(URL + "sendDocument?&reply_to_message_id=" + chain_id + "&chat_id=" + chat_id, {"document": ("c_" + result_img + ".png", binary_data)})
@@ -1053,9 +1061,11 @@ async def neural_processing(process, nprocess):
                     params["scale"] = 9.0
 
 
-                w, h, binary_data = Stable_diffusion_text_to_image(caption, params) #передаю сокет, путь к рабочей папке, имя файла и параметры генерации
-                with open(path_to_task_dir + "\\tpicture_1.png", "wb") as f:
-                    f.write(binary_data)
+                binary_data = Stable_diffusion_text_to_image(caption, params) #передаю сокет, путь к рабочей папке, имя файла и параметры генерации
+                image = PIL.Image.open(io.BytesIO(binary_data)).convert("RGB")
+                w, h = image.size
+                image.save(path_to_task_dir + "\\tpicture_1.png")
+                image.close()
                 img = str(base64.b64encode(binary_data).decode('utf-8'))
                 chain_id = send_document_to_tg(URL + "sendDocument?&reply_to_message_id=" + chain_id + "&chat_id=" + chat_id, {'document': ('drawing_0.png', binary_data)})
                 resp_data = {
