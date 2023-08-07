@@ -666,11 +666,11 @@ async def neural_processing(process, nprocess):
                         "sigma_min": 0.03, #Только для "EDMDiscretization" дискритизатора обработчика
                         "sigma_max": 14.61, #Только для "EDMDiscretization" дискритизатора обработчика
                         "rho": 3.0, #Только для "EDMDiscretization" дискритизатора обработчика
-                        "num_cols": 2, #Количество возвращаемых изображений (от 1 до 10, но, думаю, можно и больше при желании)
+                        "num_cols": 1, #Количество возвращаемых изображений (от 1 до 10, но, думаю, можно и больше при желании)
                         "cfg-scale": 5.0, #Размер cfg (от 0.0 до 100.0)
                         "steps": 40, #Количество шагов обработки (от 0 до 1000)
                     }
-                    binary_data = Stable_diffusion_XL_image_to_image(init_img_binary_data, caption, params)
+                    binary_data = Stable_diffusion_XL_image_to_image(init_img_binary_data, caption, params)[0]
                 '''
                     params = {
                         'ddim_steps': 50,             #количество шагов выборки ddim
@@ -837,11 +837,11 @@ async def neural_processing(process, nprocess):
                     "sigma_min": 0.03, #Только для "EDMDiscretization" дискритизатора обработчика
                     "sigma_max": 14.61, #Только для "EDMDiscretization" дискритизатора обработчика
                     "rho": 3.0, #Только для "EDMDiscretization" дискритизатора обработчика
-                    "num_cols": 2, #Количество возвращаемых изображений (от 1 до 10, но, думаю, можно и больше при желании)
+                    "num_cols": 1, #Количество возвращаемых изображений (от 1 до 10, но, думаю, можно и больше при желании)
                     "cfg-scale": 5.0, #Размер cfg (от 0.0 до 100.0)
                     "steps": 40, #Количество шагов обработки (от 0 до 1000)
                 }
-                binary_data = Stable_diffusion_XL_text_to_image(caption, params)
+                binary_data = Stable_diffusion_XL_text_to_image(caption, params)[0]
                 '''
                 params = {
                     "steps": 50,            #количество шагов выборки
