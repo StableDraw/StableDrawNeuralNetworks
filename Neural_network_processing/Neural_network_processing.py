@@ -17,8 +17,10 @@ from dotenv import load_dotenv
 from Image_caption_generator import Gen_caption
 from Delete_background import Delete_background
 from Upscaler import Upscale
-from Stable_diffusion import Stable_diffusion_image_to_image
-from Stable_diffusion import Stable_diffusion_text_to_image
+#from Stable_diffusion import Stable_diffusion_image_to_image
+from Stable_diffusionXL import Stable_diffusion_XL_image_to_image
+#from Stable_diffusion import Stable_diffusion_text_to_image
+from Stable_diffusionXL import Stable_diffusion_XL_text_to_image
 from Stable_diffusion import Stable_diffusion_depth_to_image
 from Stable_diffusion import Stable_diffusion_inpainting
 from Stable_diffusion import Stable_diffusion_upscaler
@@ -572,46 +574,6 @@ async def neural_processing(process, nprocess):
                         "verbose": True,
                         "max_dim": pow(512, 2)      # я не могу генерировать на своей видюхе картинки больше 512 на 512
                     }
-
-
-                    if user_settings["autophotofacepreset"] == True and image_class == 0: #нужно настроить и убрать лишнее
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.8
-                    elif user_settings["autophotonofacepreset"] == True and image_class == 1:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.8
-                    elif user_settings["autoproartpreset"] == True and image_class == 2:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.8
-                    elif user_settings["autonoproartpreset"] == True and image_class == 3:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.8
-                    elif user_settings["autoprolinepreset"] == True and image_class == 4:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.8
-                    elif user_settings["autoquicklinepreset"] == True and image_class == 5:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.8
-
-
                     binary_data = Stable_diffusion_depth_to_image(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
                 elif Is_inpainting:
                     params = {
@@ -624,46 +586,6 @@ async def neural_processing(process, nprocess):
                         "verbose": False,
                         "max_dim": pow(512, 2)  # я не могу генерировать на своей видюхе картинки больше 512 на 512
                     }
-
-
-                    if user_settings["autophotofacepreset"] == True and image_class == 0: #нужно настроить и убрать лишнее
-                        params["ddim_steps"] = 50
-                        params["scale"] = 10.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.8
-                    elif user_settings["autophotonofacepreset"] == True and image_class == 1:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 10.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.8
-                    elif user_settings["autoproartpreset"] == True and image_class == 2:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 10.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.8
-                    elif user_settings["autonoproartpreset"] == True and image_class == 3:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 10.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.8
-                    elif user_settings["autoprolinepreset"] == True and image_class == 4:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 10.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.8
-                    elif user_settings["autoquicklinepreset"] == True and image_class == 5:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 10.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.8
-
-
                     binary_data = Stable_diffusion_inpainting(init_img_binary_data, mask_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла и параметры
                 elif Is_upscale == True:
                     params = {
@@ -678,46 +600,6 @@ async def neural_processing(process, nprocess):
                         "verbose": False,
                         "max_dim": pow(512, 2)      # я не могу генерировать на своей видюхе картинки больше 256 на 256 для x4 и 512 на 512 для x2
                     }
-
-
-                    if user_settings["autophotofacepreset"] == True and image_class == 0: #нужно настроить и убрать лишнее
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["noise_augmentation"] = 20
-                    elif user_settings["autophotonofacepreset"] == True and image_class == 1:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["noise_augmentation"] = 20
-                    elif user_settings["autoproartpreset"] == True and image_class == 2:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["noise_augmentation"] = 20
-                    elif user_settings["autonoproartpreset"] == True and image_class == 3:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["noise_augmentation"] = 20
-                    elif user_settings["autoprolinepreset"] == True and image_class == 4:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["noise_augmentation"] = 20
-                    elif user_settings["autoquicklinepreset"] == True and image_class == 5:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["noise_augmentation"] = 20
-
-
                     outscale = params["outscale"]
                     if need_restore:
                         rbufer[1] *= outscale
@@ -738,46 +620,6 @@ async def neural_processing(process, nprocess):
                         "verbose": False,
                         "max_dim": pow(512, 2)      # я не могу генерировать на своей видюхе картинки больше 256 на 256 для x4 и 512 на 512 для x2
                     }
-
-
-                    if user_settings["autophotofacepreset"] == True and image_class == 0: #нужно настроить и убрать лишнее
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["noise_augmentation"] = 0.0
-                    elif user_settings["autophotonofacepreset"] == True and image_class == 1:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["noise_augmentation"] = 0.0
-                    elif user_settings["autoproartpreset"] == True and image_class == 2:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["noise_augmentation"] = 0.0
-                    elif user_settings["autonoproartpreset"] == True and image_class == 3:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["noise_augmentation"] = 0.0
-                    elif user_settings["autoprolinepreset"] == True and image_class == 4:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["noise_augmentation"] = 0.0
-                    elif user_settings["autoquicklinepreset"] == True and image_class == 5:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["noise_augmentation"] = 0.0
-
-
                     outscale = params["outscale"]
                     if need_restore:
                         rbufer[1] *= outscale
@@ -786,6 +628,50 @@ async def neural_processing(process, nprocess):
                         rbufer[4] *= outscale
                     binary_data = Stable_diffusion_upscaler_xX(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
                 else:
+                    params = {
+                        "add_watermark": False, #Добавлять невидимую вотермарку
+                        "version": "SDXL-base-1.0", # Выбор модели: "SDXL-base-1.0", "SDXL-base-0.9" (недоступна для коммерческого использования), "SD-2.1", "SD-2.1-768", "SDXL-refiner-0.9" (недоступна для коммерческого использования, используется как модель 2 стадии, для первой непригодна),  "SDXL-refiner-1.0" (используется как модель 2 стадии, для первой непригодна)
+                        "use_custom_ckpt": False, #Использовать свои веса для выбранной версии модели
+                        "custom_ckpt_name": "SDXL-base-1.0", #Имя кастомной модели, если выбран "use_custom_ckpt"
+                        "low_vram_mode": False, #Режим для работы на малом количестве видеопамяти
+                        "version2SDXL-refiner": False, #Только для версий SDXL-base: загрузить SDXL-refiner как модель для второй стадии обработки. Требует более длительной обработки и больше видеопамяти
+                        "seed": 42, #Инициализирующее значение (может быть от 0 до 1000000000)
+                        "negative_prompt": "", #Для всех моделей, кроме SDXL-base: негативное описание
+                        "refiner": "SDXL-refiner-1.0", #Если "version2SDXL-refiner" выбран, то какую версию модели для второй стадии обработки загрузить: "SDXL-refiner-1.0", "SDXL-refiner-0.9"  (недоступна для коммерческого использования)
+                        "refinement_strength": 0.15, #Сила вклада обработки на второй стадии (от 0.0 до 1.0)
+                        "finish_denoising": True, #Завершить удаление шума рафинёром (только для моделей SDXL-base, если включён version2SDXL-refiner)
+                        "h": 1024, #Высота желаемого изображения (от 64 до 2048, должна быть кратна 64)
+                        "w": 1024, #Ширина желаемого изображения (от 64 до 2048, должна быть кратна 64)
+                        "f": 8, #Коэффициент понижающей дискретизации, чаще всего 8 или 16 (можно 4, тогда есть риск учетверения, но красиво и жрёт больше видеопамяти) (От 4 до 64), если (4 можно, если w * h <= 1024 * 1024, иначе > 4)
+                        "use_recommended_res": True, #Использовать рекомендованное для каждой модели разрешение генерации, вместо указанных выше
+                        "sampler": "EulerEDMSampler", #Обработчик ("EulerEDMSampler", "HeunEDMSampler", "EulerAncestralSampler", "DPMPP2SAncestralSampler", "DPMPP2MSampler", "LinearMultistepSampler")
+                        "s_churn": 0.0,  #Только для обработчиков "EulerEDMSampler" или "HeunEDMSampler" (от 0.0 до 1.0)
+                        "s_tmin": 0.0, #Только для обработчиков ("EulerEDMSampler" или "HeunEDMSampler") и "s_churn" > 0, обнуляет сигмы меньше этого значения (от 0.0 до "sigma_max" и < "s_tmax")
+                        "s_tmax": 999.0,  #Только для обработчиков ("EulerEDMSampler" или "HeunEDMSampler") и "s_churn" > 0, обнуляет сигмы больше этого значения (от "sigma_min" до "sigma_max" и > "s_tmin")
+                        "s_noise": 1.0, #Только для обработчиков ("EulerEDMSampler" или "HeunEDMSampler" или "EulerAncestralSampler" или "DPMPP2SAncestralSampler") и "s_churn" > 0 (от 0.0)
+                        "eta": 1.0, #Только для обработчика "EulerAncestralSampler" или "DPMPP2SAncestralSampler" (от 0.0)
+                        "order": 4, #Только для обработчика "LinearMultistepSampler" (от 1)
+                        "force_i2i_resolution": False, #Если выбран, то размер итогового изображения для I2I генерации будет взят из параметров (w, h), а не у исходного изображения
+                        "i2i_strength": 0.75, #вклад в генерацию модели в режиме I2I (от 0.0 до 1.0)
+                        "m_k": 8, #Коэффициент улучшения при постобработке (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
+                        "aesthetic_score": 6.0, #Эстетический коэффициент (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
+                        "negative_aesthetic_score": 2.5, #Обратный эстетический коэффициент (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
+                        "custom_orig_width": False, #Если применён, то меняет размеры входного изображения на "orig_width" и "orig_heigt", иначе оставляет равними размерам желаемого изображения
+                        "orig_width": 1024, #Ширина входного изображения, если установлен параметр "custom_orig_width" (от 16)
+                        "orig_heigt": 1024, #Высота входного изображения, если установлен параметр "custom_orig_width" (от 16)
+                        "crop_coords_top": 0, #Обрезка координат сверху (от 0)
+                        "crop_coords_left": 0, #Обрезка координат слева (от 0)
+                        "guider_discretization": "VanillaCFG", #Дискретизатор проводника? ("VanillaCFG", "IdentityGuider")
+                        "sampling_discretization": "LegacyDDPMDiscretization", #Дискретизатор обработчика ("LegacyDDPMDiscretization", "EDMDiscretization")
+                        "sigma_min": 0.03, #Только для "EDMDiscretization" дискритизатора обработчика
+                        "sigma_max": 14.61, #Только для "EDMDiscretization" дискритизатора обработчика
+                        "rho": 3.0, #Только для "EDMDiscretization" дискритизатора обработчика
+                        "num_cols": 2, #Количество возвращаемых изображений (от 1 до 10, но, думаю, можно и больше при желании)
+                        "cfg-scale": 5.0, #Размер cfg (от 0.0 до 100.0)
+                        "steps": 40, #Количество шагов обработки (от 0 до 1000)
+                    }
+                    binary_data = Stable_diffusion_XL_image_to_image(init_img_binary_data, caption, params)
+                '''
                     params = {
                         'ddim_steps': 50,             #количество шагов выборки ddim
                         'ddim_eta': 0.0,              #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
@@ -796,47 +682,8 @@ async def neural_processing(process, nprocess):
                         'seed': 42,                   #сид (для воспроизводимой генерации изображений)
                         "max_dim": pow(512, 2)        # я не могу генерировать на своей видюхе картинки больше 512 на 512
                     }
-
-
-                    if user_settings["autophotofacepreset"] == True and image_class == 0: #нужно настроить и убрать лишнее
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.7
-                    elif user_settings["autophotonofacepreset"] == True and image_class == 1:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.7
-                    elif user_settings["autoproartpreset"] == True and image_class == 2:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.7
-                    elif user_settings["autonoproartpreset"] == True and image_class == 3:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.7
-                    elif user_settings["autoprolinepreset"] == True and image_class == 4:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.7
-                    elif user_settings["autoquicklinepreset"] == True and image_class == 5:
-                        params["ddim_steps"] = 50
-                        params["scale"] = 9.0
-                        params["ckpt"] = 0
-                        params["ddim_eta"] = 0.0
-                        params["strength"] = 0.7
-
-
                     binary_data = Stable_diffusion_image_to_image(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
+                '''
                 result_img = final_file_name + "_" + str(img_suf)
                 image = PIL.Image.open(io.BytesIO(binary_data)).convert("RGB")
                 w, h = image.size
@@ -918,64 +765,6 @@ async def neural_processing(process, nprocess):
                     "alpha_upsampler": "realesrgan",    #Апсемплер для альфа-каналов. Варианты: realesrgan | bicubic
                     "gpu-id": None                      #Устройство gpu для использования (по умолчанию = None) может быть 0, 1, 2 для обработки на нескольких GPU
                 }
-
-
-                if user_settings["autophotofacepreset"] == True and image_class == 0: #нужно настроить и убрать лишнее
-                    params["ddim_steps"] = 50
-                    params["tile"] = 0
-                    params["model"] = 0
-                    params["tile_pad"] = 10
-                    params["pre_pad"] = 0
-                    params["fp32"] = True
-                    params["alpha_upsampler"] = True
-                    params["denoise_strength"] = 0.5
-                elif user_settings["autophotonofacepreset"] == True and image_class == 1:
-                    params["ddim_steps"] = 50
-                    params["tile"] = 0
-                    params["model"] = 0
-                    params["tile_pad"] = 10
-                    params["pre_pad"] = 0
-                    params["fp32"] = True
-                    params["alpha_upsampler"] = True
-                    params["denoise_strength"] = 0.5
-                elif user_settings["autoproartpreset"] == True and image_class == 2:
-                    params["ddim_steps"] = 50
-                    params["tile"] = 0
-                    params["model"] = 0
-                    params["tile_pad"] = 10
-                    params["pre_pad"] = 0
-                    params["fp32"] = True
-                    params["alpha_upsampler"] = True
-                    params["denoise_strength"] = 0.5
-                elif user_settings["autonoproartpreset"] == True and image_class == 3:
-                    params["ddim_steps"] = 50
-                    params["tile"] = 0
-                    params["model"] = 0
-                    params["tile_pad"] = 10
-                    params["pre_pad"] = 0
-                    params["fp32"] = True
-                    params["alpha_upsampler"] = True
-                    params["denoise_strength"] = 0.5
-                elif user_settings["autoprolinepreset"] == True and image_class == 4:
-                    params["ddim_steps"] = 50
-                    params["tile"] = 0
-                    params["model"] = 0
-                    params["tile_pad"] = 10
-                    params["pre_pad"] = 0
-                    params["fp32"] = True
-                    params["alpha_upsampler"] = True
-                    params["denoise_strength"] = 0.5
-                elif user_settings["autoquicklinepreset"] == True and image_class == 5:
-                    params["ddim_steps"] = 50
-                    params["tile"] = 0
-                    params["model"] = 0
-                    params["tile_pad"] = 10
-                    params["pre_pad"] = 0
-                    params["fp32"] = True
-                    params["alpha_upsampler"] = True
-                    params["denoise_strength"] = 0.5
-
-
                 if user_settings["autofaceenchance"] == True:
                     params["face_enhance"] = True
                 outscale = params["outscale"]
@@ -1013,6 +802,48 @@ async def neural_processing(process, nprocess):
             elif task_type == 't': #если нужно сгенерировать изображение по описанию
                 caption = task[2]
                 params = {
+                    "add_watermark": False, #Добавлять невидимую вотермарку
+                    "version": "SDXL-base-1.0", # Выбор модели: "SDXL-base-1.0", "SDXL-base-0.9" (недоступна для коммерческого использования), "SD-2.1", "SD-2.1-768", "SDXL-refiner-0.9" (недоступна для коммерческого использования, используется как модель 2 стадии, для первой непригодна),  "SDXL-refiner-1.0" (используется как модель 2 стадии, для первой непригодна)
+                    "use_custom_ckpt": False, #Использовать свои веса для выбранной версии модели
+                    "custom_ckpt_name": "SDXL-base-1.0", #Имя кастомной модели, если выбран "use_custom_ckpt"
+                    "low_vram_mode": False, #Режим для работы на малом количестве видеопамяти
+                    "version2SDXL-refiner": False, #Только для версий SDXL-base: загрузить SDXL-refiner как модель для второй стадии обработки. Требует более длительной обработки и больше видеопамяти
+                    "seed": 42, #Инициализирующее значение (может быть от 0 до 1000000000)
+                    "negative_prompt": "", #Для всех моделей, кроме SDXL-base: негативное описание
+                    "refiner": "SDXL-refiner-1.0", #Если "version2SDXL-refiner" выбран, то какую версию модели для второй стадии обработки загрузить: "SDXL-refiner-1.0", "SDXL-refiner-0.9"  (недоступна для коммерческого использования)
+                    "refinement_strength": 0.15, #Сила вклада обработки на второй стадии (от 0.0 до 1.0)
+                    "finish_denoising": True, #Завершить удаление шума рафинёром (только для моделей SDXL-base, если включён version2SDXL-refiner)
+                    "h": 1024, #Высота желаемого изображения (от 64 до 2048, должна быть кратна 64)
+                    "w": 1024, #Ширина желаемого изображения (от 64 до 2048, должна быть кратна 64)
+                    "f": 8, #Коэффициент понижающей дискретизации, чаще всего 8 или 16 (можно 4, тогда есть риск учетверения, но красиво и жрёт больше видеопамяти) (От 4 до 64), если (4 можно, если w * h <= 1024 * 1024, иначе > 4)
+                    "use_recommended_res": True, #Использовать рекомендованное для каждой модели разрешение генерации, вместо указанных выше
+                    "sampler": "EulerEDMSampler", #Обработчик ("EulerEDMSampler", "HeunEDMSampler", "EulerAncestralSampler", "DPMPP2SAncestralSampler", "DPMPP2MSampler", "LinearMultistepSampler")
+                    "s_churn": 0.0,  #Только для обработчиков "EulerEDMSampler" или "HeunEDMSampler" (от 0.0 до 1.0)
+                    "s_tmin": 0.0, #Только для обработчиков ("EulerEDMSampler" или "HeunEDMSampler") и "s_churn" > 0, обнуляет сигмы меньше этого значения (от 0.0 до "sigma_max" и < "s_tmax")
+                    "s_tmax": 999.0,  #Только для обработчиков ("EulerEDMSampler" или "HeunEDMSampler") и "s_churn" > 0, обнуляет сигмы больше этого значения (от "sigma_min" до "sigma_max" и > "s_tmin")
+                    "s_noise": 1.0, #Только для обработчиков ("EulerEDMSampler" или "HeunEDMSampler" или "EulerAncestralSampler" или "DPMPP2SAncestralSampler") и "s_churn" > 0 (от 0.0)
+                    "eta": 1.0, #Только для обработчика "EulerAncestralSampler" или "DPMPP2SAncestralSampler" (от 0.0)
+                    "order": 4, #Только для обработчика "LinearMultistepSampler" (от 1)
+                    "m_k": 8, #Коэффициент улучшения при постобработке (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
+                    "aesthetic_score": 6.0, #Эстетический коэффициент (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
+                    "negative_aesthetic_score": 2.5, #Обратный эстетический коэффициент (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
+                    "custom_orig_width": False, #Если применён, то меняет размеры входного изображения на "orig_width" и "orig_heigt", иначе оставляет равними размерам желаемого изображения
+                    "orig_width": 1024, #Ширина входного изображения, если установлен параметр "custom_orig_width" (от 16)
+                    "orig_heigt": 1024, #Высота входного изображения, если установлен параметр "custom_orig_width" (от 16)
+                    "crop_coords_top": 0, #Обрезка координат сверху (от 0)
+                    "crop_coords_left": 0, #Обрезка координат слева (от 0)
+                    "guider_discretization": "VanillaCFG", #Дискретизатор проводника? ("VanillaCFG", "IdentityGuider")
+                    "sampling_discretization": "LegacyDDPMDiscretization", #Дискретизатор обработчика ("LegacyDDPMDiscretization", "EDMDiscretization")
+                    "sigma_min": 0.03, #Только для "EDMDiscretization" дискритизатора обработчика
+                    "sigma_max": 14.61, #Только для "EDMDiscretization" дискритизатора обработчика
+                    "rho": 3.0, #Только для "EDMDiscretization" дискритизатора обработчика
+                    "num_cols": 2, #Количество возвращаемых изображений (от 1 до 10, но, думаю, можно и больше при желании)
+                    "cfg-scale": 5.0, #Размер cfg (от 0.0 до 100.0)
+                    "steps": 40, #Количество шагов обработки (от 0 до 1000)
+                }
+                binary_data = Stable_diffusion_XL_text_to_image(caption, params)
+                '''
+                params = {
                     "steps": 50,            #количество шагов выборки
                     "sampler": "plms",      #обработчик (доступно "plms", "dpm" и "ddim")
                     "ddim_eta": 0.0,        #работает только при установке обработчика ddim, (значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке)
@@ -1021,47 +852,8 @@ async def neural_processing(process, nprocess):
                     "ckpt": 0,              #выбор контрольной точки модели (0 или 1 для размерностей 512 или 768 соответственно)
                     "seed": 42              #сид (для воспроизводимой генерации изображений)
                 }
-
-
-                if user_settings["autophotofacepreset"] == True and image_class == 0: #нужно настроить и убрать лишнее
-                    params["steps"] = 50
-                    params["sampler"] = "plms"
-                    params["ckpt"] = 0
-                    params["ddim_eta"] = 0.0
-                    params["scale"] = 9.0
-                elif user_settings["autophotonofacepreset"] == True and image_class == 1:
-                    params["steps"] = 50
-                    params["sampler"] = "plms"
-                    params["ckpt"] = 0
-                    params["ddim_eta"] = 0.0
-                    params["scale"] = 9.0
-                elif user_settings["autoproartpreset"] == True and image_class == 2:
-                    params["steps"] = 50
-                    params["sampler"] = "plms"
-                    params["ckpt"] = 0
-                    params["ddim_eta"] = 0.0
-                    params["scale"] = 9.0
-                elif user_settings["autonoproartpreset"] == True and image_class == 3:
-                    params["steps"] = 50
-                    params["sampler"] = "plms"
-                    params["ckpt"] = 0
-                    params["ddim_eta"] = 0.0
-                    params["scale"] = 9.0
-                elif user_settings["autoprolinepreset"] == True and image_class == 4:
-                    params["steps"] = 50
-                    params["sampler"] = "plms"
-                    params["ckpt"] = 0
-                    params["ddim_eta"] = 0.0
-                    params["scale"] = 9.0
-                elif user_settings["autoquicklinepreset"] == True and image_class == 5:
-                    params["steps"] = 50
-                    params["sampler"] = "plms"
-                    params["ckpt"] = 0
-                    params["ddim_eta"] = 0.0
-                    params["scale"] = 9.0
-
-
                 binary_data = Stable_diffusion_text_to_image(caption, params) #передаю сокет, путь к рабочей папке, имя файла и параметры генерации
+                '''
                 image = PIL.Image.open(io.BytesIO(binary_data)).convert("RGB")
                 w, h = image.size
                 image.save(path_to_task_dir + "\\tpicture_1.png")
