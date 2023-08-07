@@ -6,6 +6,7 @@
 *.key
 *.crt
 *.safetensors
+Neural_network_processing/checkpoints
 Neural_network_processing/log
 Stable_draw_classifier_v1/Dataset_100_v1
 Stable_draw_classifier_v1/Dataset_v1
