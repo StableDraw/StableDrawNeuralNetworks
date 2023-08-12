@@ -16,7 +16,7 @@ from deep_translator import single_detection
 from dotenv import load_dotenv
 from Image_caption_generator import Gen_caption
 from Delete_background import Delete_background
-from Upscaler import Upscale
+from RealESRGAN import Upscale
 #from Stable_diffusion import Stable_diffusion_image_to_image
 from Stable_diffusionXL import Stable_diffusion_XL_image_to_image
 #from Stable_diffusion import Stable_diffusion_text_to_image
@@ -310,7 +310,7 @@ def make_mask(img, path_to_save):
 
 def colorize(init_img_binary_data, image_class):
     params = {
-        "ckpt": 0,                         #Выбор модели (от 0 до 3)
+        "ckpt": "ColorizeArtistic_gen",    #Выбор модели ("ColorizeArtistic_gen", "ColorizeArtistic_gen_GrayScale", "ColorizeArtistic_gen_Sketch", "ColorizeArtistic_gen_Sketch2Gray")
         "steps": 1,                        #Количество шагов обработки (минимум 1)
         "compare": False,                  #Сравнивать с оригиналом
         "artistic": True,                  #Дополнительная модель для обработки
@@ -319,11 +319,12 @@ def colorize(init_img_binary_data, image_class):
         "clr_saturation_factor": 5,        #Коэффициент увеличения цветовой насыщенности (1 - не добавлять насыщенность)
         "line_color_limit": 100,           #минимальная яркость пикселя, при которой цветовая насыщенность увеличиваться не будет (меньше для цифровых рисунков, больше для рисунков карандашом. 1 если лайн абсолютно чёрный)
         "clr_saturate_every_step": True    #Повышать цветовую насыщенность после каждого шага (играет роль только если количество шагов обработки больше 1)
+        #max_dim не учитывается, поскольку в колоризатор встроен внутренний даунсемплер
     }
 
     if user_settings["autophotofacepreset"] == True and image_class == 0: #нужно настроить и убрать лишнее
         params["steps"] = 1
-        params["ckpt"] = 1
+        params["ckpt"] = "ColorizeArtistic_gen_GrayScale"
         params["compare"] = False
         params["artistic"] = True
         params["render_factor"] = 12
@@ -333,7 +334,7 @@ def colorize(init_img_binary_data, image_class):
         params["clr_saturate_every_step"] = True
     elif user_settings["autophotonofacepreset"] == True and image_class == 1:
         params["steps"] = 1
-        params["ckpt"] = 1
+        params["ckpt"] = "ColorizeArtistic_gen_GrayScale"
         params["compare"] = False
         params["artistic"] = True
         params["render_factor"] = 12
@@ -343,7 +344,7 @@ def colorize(init_img_binary_data, image_class):
         params["clr_saturate_every_step"] = True
     elif user_settings["autoproartpreset"] == True and image_class == 2:
         params["steps"] = 1
-        params["ckpt"] = 0
+        params["ckpt"] = "ColorizeArtistic_gen"
         params["compare"] = False
         params["artistic"] = True
         params["render_factor"] = 12
@@ -353,7 +354,7 @@ def colorize(init_img_binary_data, image_class):
         params["clr_saturate_every_step"] = True
     elif user_settings["autonoproartpreset"] == True and image_class == 3:
         params["steps"] = 1
-        params["ckpt"] = 1
+        params["ckpt"] = "ColorizeArtistic_gen_GrayScale"
         params["compare"] = False
         params["artistic"] = True
         params["render_factor"] = 12
@@ -363,7 +364,7 @@ def colorize(init_img_binary_data, image_class):
         params["clr_saturate_every_step"] = True
     elif user_settings["autoprolinepreset"] == True and image_class == 4:
         params["steps"] = 1
-        params["ckpt"] = 2
+        params["ckpt"] = "ColorizeArtistic_gen_Sketch"
         params["compare"] = False
         params["artistic"] = True
         params["render_factor"] = 12
@@ -373,7 +374,7 @@ def colorize(init_img_binary_data, image_class):
         params["clr_saturate_every_step"] = True
     elif user_settings["autoquicklinepreset"] == True and image_class == 5:
         params["steps"] = 1
-        params["ckpt"] = 2
+        params["ckpt"] = "ColorizeArtistic_gen_Sketch"
         params["compare"] = False
         params["artistic"] = True
         params["render_factor"] = 12
@@ -381,7 +382,6 @@ def colorize(init_img_binary_data, image_class):
         params["clr_saturation_factor"] = 2
         params["line_color_limit"] = 40
         params["clr_saturate_every_step"] = True
-
     return Image_сolorizer(init_img_binary_data, params) #передаю путь к рабочей папке и имя файла
 
 def is_black_and_white(bd):
@@ -525,7 +525,7 @@ async def neural_processing(process, nprocess):
                         "no_repeat_ngram_size": 3,      #не повторять N-граммы размера
                         "sampling_topk": 3,             #из скольки тоненов отбирать лучший (0 - не использовать сэмплирование)
                         "seed": 7                       #инициализирующее значение для генерации
-                    }
+                    }#max_dim не обнаружено. Возможно даунсемплит где-то внутри
                     english_caption = Gen_caption(init_img_binary_data, params)
                     english_caption, chain_id = del_prompt_about_drawing(english_caption, message_id, noback)
                     with open(path_to_task_dir + "\\" + final_file_name + "_" + str(img_suf) + ".txt", "w") as f:
@@ -564,41 +564,41 @@ async def neural_processing(process, nprocess):
                 message_id = chain_id
                 if Is_depth == True:
                     params = {
-                        "ddim_steps": 50,           #Шаги DDIM, от 0 до 50
-                        "ddim_eta": 0.0,            #ddim η (η = 0.0 соответствует детерминированной выборке)
-                        "scale": 9.0,               #от 0.1 до 30.0
-                        "strength": 0.9,            #сила увеличения/уменьшения шума. 1.0 соответствует полному уничтожению информации в инициализирующем образе
-                        "ckpt": 0,                  #выбор весов модели (0)
-                        "seed": 42,                 #от 0 до 1000000
-                        "model_type": "dpt_hybrid", #тип модели
+                        "ddim_steps": 50,                       #Шаги DDIM, от 0 до 50
+                        "ddim_eta": 0.0,                        #ddim η (η = 0.0 соответствует детерминированной выборке)
+                        "scale": 9.0,                           #от 0.1 до 30.0
+                        "strength": 0.9,                        #сила увеличения/уменьшения шума. 1.0 соответствует полному уничтожению информации в инициализирующем образе
+                        "ckpt": "512-depth-ema.safetensors",    #выбор весов модели ("512-depth-ema.safetensors")
+                        "seed": 42,                             #от 0 до 1000000
+                        "model_type": "dpt_hybrid",             #тип модели
                         "verbose": True,
-                        "max_dim": pow(512, 2)      # я не могу генерировать на своей видюхе картинки больше 512 на 512
+                        "max_dim": pow(2048, 2)                 # я не могу генерировать на своей видюхе картинки больше 2048 на 2048
                     }
                     binary_data = Stable_diffusion_depth_to_image(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
                 elif Is_inpainting:
                     params = {
-                        "ddim_steps": 50,           #Шаги DDIM, от 0 до 50
-                        "ddim_eta": 0.0,            #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
-                        "scale": 10.0,              #от 0.1 до 30.0
-                        "strength": 0.9,            #сила увеличения/уменьшения шума. 1.0 соответствует полному уничтожению информации в инициализирующем образе
-                        "ckpt": 0,                  #выбор весов модели (0)
-                        "seed": 42,                 #от 0 до 1000000
+                        "ddim_steps": 50,                           #Шаги DDIM, от 0 до 50
+                        "ddim_eta": 0.0,                            #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
+                        "scale": 10.0,                              #от 0.1 до 30.0
+                        "strength": 0.9,                            #сила увеличения/уменьшения шума. 1.0 соответствует полному уничтожению информации в инициализирующем образе
+                        "ckpt": "512-inpainting-ema.safetensors",   #выбор весов модели ("512-inpainting-ema.safetensors")
+                        "seed": 42,                                 #от 0 до 1000000
                         "verbose": False,
-                        "max_dim": pow(512, 2)  # я не могу генерировать на своей видюхе картинки больше 512 на 512
+                        "max_dim": pow(2048, 2)                     #я не могу генерировать на своей видюхе картинки больше 2048 на 2048
                     }
                     binary_data = Stable_diffusion_inpainting(init_img_binary_data, mask_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла и параметры
                 elif Is_upscale == True:
                     params = {
-                        "ddim_steps": 50,           #Шаги DDIM, от 2 до 250
-                        "ddim_eta": 0.0,            #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
-                        "scale": 9.0,               #от 0.1 до 30.0
-                        "ckpt": 0,                  #выбор весов модели (0)
-                        "seed": 42,                 #от 0 до 1000000
-                        "outscale": 4,              #Величина того, во сколько раз увеличть разшрешение изображения
-                        "noise_augmentation": 20,   #от 0 до 350
-                        "negative_prompt": None,    #отрицательное описание (если без него, то None)
+                        "ddim_steps": 50,                       #Шаги DDIM, от 2 до 250
+                        "ddim_eta": 0.0,                        #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
+                        "scale": 9.0,                           #от 0.1 до 30.0
+                        "ckpt": "x4-upscaler-ema.safetensors",  #выбор весов модели ("x4-upscaler-ema.safetensors")
+                        "seed": 42,                             #от 0 до 1000000
+                        "outscale": 4,                          #Величина того, во сколько раз увеличть разшрешение изображения
+                        "noise_augmentation": 20,               #от 0 до 350
+                        "negative_prompt": None,                #отрицательное описание (если без него, то None)
                         "verbose": False,
-                        "max_dim": pow(512, 2)      # я не могу генерировать на своей видюхе картинки больше 256 на 256 для x4 и 512 на 512 для x2
+                        "max_dim": pow(512, 2)                  #я не могу генерировать на своей видюхе картинки больше 512 на 512 для x4 и 512 на 512 для x2
                     }
                     outscale = params["outscale"]
                     if need_restore:
@@ -612,13 +612,12 @@ async def neural_processing(process, nprocess):
                         "ddim_steps": 20,           #Шаги DDIM, от 2 до 250
                         "ddim_eta": 0.0,            #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
                         "scale": 9.0,               #от 0.1 до 30.0
-                        "ckpt": 0,                  #выбор весов модели (0)
                         "seed": 42,                 #от 0 до 1000000
                         "outscale": 2,              #Величина того, во сколько раз увеличть разшрешение изображения
                         "noise_augmentation": 0.0,   #от 0 до 350
                         "negative_prompt": None,    #отрицательное описание (если без него, то None)
                         "verbose": False,
-                        "max_dim": pow(512, 2)      # я не могу генерировать на своей видюхе картинки больше 256 на 256 для x4 и 512 на 512 для x2
+                        "max_dim": pow(1024, 2)      # я не могу обрабатывать на своей видюхе картинки больше 1024 на 1024
                     }
                     outscale = params["outscale"]
                     if need_restore:
@@ -669,18 +668,19 @@ async def neural_processing(process, nprocess):
                         "num_cols": 1, #Количество возвращаемых изображений (от 1 до 10, но, думаю, можно и больше при желании)
                         "cfg-scale": 5.0, #Размер cfg (от 0.0 до 100.0)
                         "steps": 40, #Количество шагов обработки (от 0 до 1000)
+                        "max_dim": pow(2048, 2) # я не могу генерировать на своей видюхе картинки больше 2048 на 2048
                     }
                     binary_data = Stable_diffusion_XL_image_to_image(init_img_binary_data, caption, params)[0]
                 '''
                     params = {
-                        'ddim_steps': 50,             #количество шагов выборки ddim
-                        'ddim_eta': 0.0,              #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
-                        'f': 8,                       #коэффициент понижающей дискретизации, чаще всего 8 или 16 (можно 4, тогда есть риск учетверения, но красиво)
-                        'scale': 9.0,                 #безусловная навигационная величина: eps = eps(x, empty) + scale * (eps(x, cond) - eps(x, empty))
-                        'strength': 0.7,              #сила увеличения/уменьшения шума. 1.0 соответствует полному уничтожению информации в инициализирующем образе
-                        'ckpt': 0,                    #выбор весов модели (от 0 до 10)
-                        'seed': 42,                   #сид (для воспроизводимой генерации изображений)
-                        "max_dim": pow(512, 2)        # я не могу генерировать на своей видюхе картинки больше 512 на 512
+                        "ddim_steps": 50,               #количество шагов выборки ddim
+                        "ddim_eta": 0.0,                #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
+                        "f": 8,                         #коэффициент понижающей дискретизации, чаще всего 8 или 16 (можно 4, тогда есть риск учетверения, но красиво)
+                        "scale": 9.0,                   #безусловная навигационная величина: eps = eps(x, empty) + scale * (eps(x, cond) - eps(x, empty))
+                        "strength": 0.7,                #сила увеличения/уменьшения шума. 1.0 соответствует полному уничтожению информации в инициализирующем образе
+                        "ckpt": "sd-v1-1.safetensors",  #выбор весов модели ("sd-v1-1.safetensors", "sd-v1-1-full-ema.safetensors", "sd-v1-2.safetensors", "sd-v1-2-full-ema.safetensors", "sd-v1-3.safetensors", "sd-v1-3-full-ema.safetensors", "sd-v1-4.safetensors", "sd-v1-4-full-ema.safetensors", "sd-v1-5.safetensors", "sd-v1-5-full-ema.safetensors": 0)
+                        "seed": 42,                     #сид (для воспроизводимой генерации изображений)
+                        "max_dim": pow(512, 2)          #я не могу генерировать на своей видюхе картинки больше 512 на 512
                     }
                     binary_data = Stable_diffusion_image_to_image(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
                 '''
@@ -715,14 +715,15 @@ async def neural_processing(process, nprocess):
                 params = {
                     "model": "DIS", #Доступно "U2NET" или "DIS"
                     "RescaleT": 320, #Только для модели U2NET
-                    #Только для модели "DIM":
-                    "ckpt": 0,                  # Выбор впретренированных весов модели (0 или 1)
+                    #Только для модели "DIS":
+                    "ckpt": "isnet.pth",        # Выбор впретренированных весов модели ("isnet.pth", "isnet-general-use.pth")
                     "interm_sup": False,        # Указать, активировать ли контроль промежуточных функций
                     "model_digit": "full",      # Выберите точность с плавающей запятой (устанавливает "half" или "full" точность числа с плавающей запятой)
                     "seed": 0,                  # Инициализирующее значение
                     "cache_size": [1024, 1024], # Кешированное входное пространственное разрешение, можно настроить на другой размер
                     "input_size": [1024, 1024], # Входной пространственный размер модели, обычно используют одно и то же значение params["cache_size"], что означает, что мы больше не изменяем размер изображений
                     "crop_size": [1024, 1024]   # Размер случайно обрезки из ввода, обычно он меньше, чем params["cache_size"], например, [920, 920] для увеличения данных
+                #max_dim, возможно, даунсемплится по "*_size" параметрам выше. Не исследованно, и зависит от модели. По умолчанию, ограничений нет
                 }
                 binary_data = Delete_background(init_img_binary_data, params) #передаю путь к рабочей папке и имя файла
                 result_img = final_file_name + "_" + str(img_suf)
@@ -754,9 +755,9 @@ async def neural_processing(process, nprocess):
 
             elif task_type == 'a': #если нужно апскейлить изображение
                 params = {
-                    "model": 0,                         #Номер модели для обработки (0-5)
-                    "denoise_strength": 0.5,            #Сила удаления шума. 0 для слабого удаления шума (шум сохраняется), 1 для сильного удаления шума. Используется только для модели 5 (realesr-general-x4v3 model)
-                    "outscale": 4,                      #Величина того, во сколько раз увеличть разшрешение изображения (модель 3 x2, остальные x4)
+                    "model": "RealESRGAN_x4plus",       #Модель для обработки ("RealESRGAN_x4plus" - модель x4 RRDBNet, "RealESRNet_x4plus" - модель x4 RRDBNet, "RealESRGAN_x4plus_anime_6B" - модель x4 RRDBNet с 6 блоками, "RealESRGAN_x2plus" - модель x2 RRDBNet, "realesr-animevideov3" - модель x4 VGG-стиля (размера XS), "realesr-general-x4v3" - модель x4 VGG-стиля (размера S)) 
+                    "denoise_strength": 0.5,            #Сила удаления шума. 0 для слабого удаления шума (шум сохраняется), 1 для сильного удаления шума. Используется только для модели "realesr-general-x4v3"
+                    "outscale": 4,                      #Величина того, во сколько раз увеличть разшрешение изображения (модель "RealESRGAN_x2plus" x2, остальные x4)
                     "tile": 0,                          #Размер плитки, 0 для отсутствия плитки во время тестирования
                     "tile_pad": 10,                     #Заполнение плитки
                     "pre_pad": 0,                       #Предварительный размер заполнения на каждой границе
@@ -764,8 +765,9 @@ async def neural_processing(process, nprocess):
                     "fp32": True,                       #Использовать точность fp32 во время вывода. По умолчанию fp16 (половинная точность)
                     "alpha_upsampler": "realesrgan",    #Апсемплер для альфа-каналов. Варианты: realesrgan | bicubic
                     "gpu-id": None                      #Устройство gpu для использования (по умолчанию = None) может быть 0, 1, 2 для обработки на нескольких GPU
+                    #на данный момент "max_dim": pow(1024, 2) ((для всех моделей, кроме "RealESRGAN_x2plus") и "outscale": 4), и pow(2048, 2) (для модели "RealESRGAN_x2plus" и "outscale": 2)
                 }
-                if user_settings["autofaceenchance"] == True:
+                if user_settings["autofaceenchance"] == True and image_class == 0:
                     params["face_enhance"] = True
                 outscale = params["outscale"]
                 binary_data = Upscale(init_img_binary_data, params) #передаю путь к рабочей папке
@@ -839,18 +841,19 @@ async def neural_processing(process, nprocess):
                     "rho": 3.0, #Только для "EDMDiscretization" дискритизатора обработчика
                     "num_cols": 1, #Количество возвращаемых изображений (от 1 до 10, но, думаю, можно и больше при желании)
                     "cfg-scale": 5.0, #Размер cfg (от 0.0 до 100.0)
-                    "steps": 40, #Количество шагов обработки (от 0 до 1000)
+                    "steps": 40 #Количество шагов обработки (от 0 до 1000)
+                    #на данный момент "max_dim": 8 * pow(2048, 2) / f
                 }
                 binary_data = Stable_diffusion_XL_text_to_image(caption, params)[0]
                 '''
                 params = {
-                    "steps": 50,            #количество шагов выборки
-                    "sampler": "plms",      #обработчик (доступно "plms", "dpm" и "ddim")
-                    "ddim_eta": 0.0,        #работает только при установке обработчика ddim, (значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке)
-                    "f": 8,                 #коэффициент понижающей дискретизации, чаще всего 8 или 16, если поставить 4, будет красиво, но учетверяться
-                    "scale": 9.0,           #безусловная навигационная величина: eps = eps(x, empty) + scale * (eps(x, cond) - eps(x, empty))
-                    "ckpt": 0,              #выбор контрольной точки модели (0 или 1 для размерностей 512 или 768 соответственно)
-                    "seed": 42              #сид (для воспроизводимой генерации изображений)
+                    "steps": 50,                                #количество шагов выборки
+                    "sampler": "plms",                          #обработчик (доступно "plms", "dpm" и "ddim")
+                    "ddim_eta": 0.0,                            #работает только при установке обработчика ddim, (значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке)
+                    "f": 8,                                     #коэффициент понижающей дискретизации, чаще всего 8 или 16, если поставить 4, будет красиво, но учетверяться
+                    "scale": 9.0,                               #безусловная навигационная величина: eps = eps(x, empty) + scale * (eps(x, cond) - eps(x, empty))
+                    "ckpt": "v2-1_512-ema-pruned.safetensors",  #выбор контрольной точки модели ("v2-1_512-ema-pruned.safetensors", "v2-1_512-nonema-pruned.safetensors", "v2-1_768-ema-pruned.safetensors", "v2-1_768-nonema-pruned.safetensors")
+                    "seed": 42                                  #сид (для воспроизводимой генерации изображений)
                 }
                 binary_data = Stable_diffusion_text_to_image(caption, params) #передаю сокет, путь к рабочей папке, имя файла и параметры генерации
                 '''

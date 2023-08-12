@@ -479,10 +479,10 @@ def apply_refiner(opt, input, state, sampler, num_samples, prompt, filter = None
     value_dict = init_dict
     value_dict["prompt"] = prompt
     value_dict["negative_prompt"] = opt["negative_prompt"] if version_dict["is_legacy"] else ""
-    value_dict["crop_coords_top"] = 0
-    value_dict["crop_coords_left"] = 0
-    value_dict["aesthetic_score"] = 6.0
-    value_dict["negative_aesthetic_score"] = 2.5
+    value_dict["crop_coords_top"] = opt["crop_coords_top"]
+    value_dict["crop_coords_left"] = opt["crop_coords_left"]
+    value_dict["aesthetic_score"] = opt["aesthetic_score"]
+    value_dict["negative_aesthetic_score"] = opt["negative_aesthetic_score"]
     print(f"Пропорции входного изображения рефайнера: {input.shape}")
     samples = do_img2img(input, state["model"], sampler, value_dict, num_samples, skip_encode = True, filter = filter, add_noise = not finish_denoising)
     return samples
@@ -511,7 +511,6 @@ def SDXL_postprocessing(opt, prompt, state, finish_denoising, out, add_pipeline,
     return r
 
 def Stable_diffusion_XL_text_to_image(prompt, opt):
-    opt["max_dim"] = pow(2048, 2) # я не могу генерировать на своей видюхе картинки больше 2048 на 2048
     state, return_latents, stage2strength, state2, sampler2, finish_denoising, negative_prompt = prepare_SDXL(opt)
     filter = state.get("filter")
     version_dict = VERSION2SPECS[opt["version"]]
@@ -536,7 +535,6 @@ def Stable_diffusion_XL_text_to_image(prompt, opt):
     return SDXL_postprocessing(opt, prompt, state, finish_denoising, out, return_latents, state2, sampler2)
 
 def Stable_diffusion_XL_image_to_image(binary_data, prompt, opt):
-    opt["max_dim"] = pow(2048, 2) # я не могу генерировать на своей видюхе картинки больше 2048 на 2048
     state, return_latents, stage2strength, state2, sampler2, finish_denoising, negative_prompt = prepare_SDXL(opt)
     filter = state.get("filter")
     version_dict = VERSION2SPECS[opt["version"]]

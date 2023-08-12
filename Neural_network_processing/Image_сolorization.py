@@ -384,12 +384,6 @@ def increase_color_saturation(image, brite_k = 0, min_brite = 0):
     return image
 
 def Image_сolorizer(input_binary_image, params):
-    checkpoint_list = [
-        "ColorizeArtistic_gen",
-        "ColorizeArtistic_gen_GrayScale",
-        "ColorizeArtistic_gen_Sketch",
-        "ColorizeArtistic_gen_Sketch2Gray"
-    ]
-    filtr = get_image_filtr(weights_name = checkpoint_list[params["ckpt"]], artistic = params["artistic"], stats = ([0.7137, 0.6628, 0.6519], [0.2970, 0.3017, 0.2979]))
+    filtr = get_image_filtr(weights_name = params["ckpt"], artistic = params["artistic"], stats = ([0.7137, 0.6628, 0.6519], [0.2970, 0.3017, 0.2979]))
     binary_image = get_transformed_image(input_binary_image, filtr = filtr, params = params)
     return binary_image

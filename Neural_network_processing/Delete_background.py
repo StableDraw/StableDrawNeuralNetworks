@@ -224,11 +224,7 @@ def U2NET_Delete_background(binary_data, params):
     return result_binary_data
 
 def DIS_Delete_background(binary_data, params):
-    checkpoint_list = [
-        "isnet.pth",
-        "isnet-general-use.pth"
-    ]
-    restore_model = checkpoint_list[params["ckpt"]]
+    restore_model = params["ckpt"]
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     class GOSNormalize(object): #Нормализация Image при помощи torch.transforms
         def __init__(self, mean = [0.485, 0.456, 0.406], std = [0.229, 0.224, 0.225]):

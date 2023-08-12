@@ -70,23 +70,23 @@ def load_img(binary_data, max_dim):
 def Stable_diffusion_text_to_image(prompt, opt):
     torch.set_grad_enabled(False)
     checkpoint_path = "models\\ldm\\stable-diffusion\\text2img\\"
-    checkpoint_list = [
-        ["v2-1_512-ema-pruned.safetensors", 1],
-        ["v2-1_512-nonema-pruned.safetensors", 1],
-        ["v2-1_768-ema-pruned.safetensors", 1],
-        ["v2-1_768-nonema-pruned.safetensors", 1],
-        ["cornflowerStylizedAnime_v8.safetensors", 0],
-    ]
+    checkpoint_list = {
+        "v2-1_512-ema-pruned.safetensors": 1,
+        "v2-1_512-nonema-pruned.safetensors": 1,
+        "v2-1_768-ema-pruned.safetensors": 1,
+        "v2-1_768-nonema-pruned.safetensors": 1,
+        "cornflowerStylizedAnime_v8.safetensors": 0,
+    }
     config_path = "configs\\stable-diffusion\\"
     config_list = ["v1-inference.yaml", "v2-inference.yaml"]
     w = 512
     h = 512
-    if (opt["ckpt"] == 2 or opt["ckpt"] == 3):
+    if ("1_768" in opt["ckpt"]):
         w = 768
         h = 768
     seed_everything(opt["seed"])
-    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["ckpt"]][1]])
-    model = load_model_from_config(config, checkpoint_path + checkpoint_list[opt["ckpt"]][0])
+    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["ckpt"]]])
+    model = load_model_from_config(config, checkpoint_path + opt["ckpt"])
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
     if opt["sampler"] == "plms":
@@ -119,23 +119,23 @@ def Stable_diffusion_text_to_image(prompt, opt):
 
 def Stable_diffusion_image_to_image(binary_data, prompt, opt):
     checkpoint_path = 'models\\ldm\\stable-diffusion\\img2img\\'
-    checkpoint_list = [
-        ["sd-v1-1.safetensors", 0],
-        ["sd-v1-1-full-ema.safetensors", 0],
-        ["sd-v1-2.safetensors", 0],
-        ["sd-v1-2-full-ema.safetensors", 0],
-        ["sd-v1-3.safetensors", 0],
-        ["sd-v1-3-full-ema.safetensors", 0],
-        ["sd-v1-4.safetensors", 0],
-        ["sd-v1-4-full-ema.safetensors", 0],
-        ["sd-v1-5.safetensors", 0],
-        ["sd-v1-5-full-ema.safetensors", 0],
-    ]
+    checkpoint_list = {
+        "sd-v1-1.safetensors": 0,
+        "sd-v1-1-full-ema.safetensors": 0,
+        "sd-v1-2.safetensors": 0,
+        "sd-v1-2-full-ema.safetensors": 0,
+        "sd-v1-3.safetensors": 0,
+        "sd-v1-3-full-ema.safetensors": 0,
+        "sd-v1-4.safetensors": 0,
+        "sd-v1-4-full-ema.safetensors": 0,
+        "sd-v1-5.safetensors": 0,
+        "sd-v1-5-full-ema.safetensors": 0,
+    }
     config_path = "configs\\stable-diffusion\\"
     config_list = ["v1-inference.yaml", "v2-inference.yaml"]
     seed_everything(opt['seed'])
-    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["ckpt"]][1]])
-    model = load_model_from_config(config, checkpoint_path + checkpoint_list[opt["ckpt"]][0])
+    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["ckpt"]]])
+    model = load_model_from_config(config, checkpoint_path + opt["ckpt"])
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
     sampler = DDIMSampler(model)
@@ -170,12 +170,12 @@ def Stable_diffusion_image_to_image(binary_data, prompt, opt):
 def Stable_diffusion_depth_to_image(binary_data, prompt, opt):
     torch.set_grad_enabled(False)
     checkpoint_path = "models\\ldm\\stable-diffusion\\dept2img\\"
-    checkpoint_list = [
-        ["512-depth-ema.safetensors", 0]
-    ]
+    checkpoint_list = {
+        "512-depth-ema.safetensors": 0
+    }
     config_path = "configs\\stable-diffusion\\"
     config_list = ["v2-midas-inference.yaml"]
-    config = config_path + config_list[checkpoint_list[opt["ckpt"]][1]]
+    config = config_path + config_list[checkpoint_list[opt["ckpt"]]]
     seed_everything(opt['seed'])
     image = load_img(binary_data, opt["max_dim"])
     assert 0. <= opt["strength"] <= 1., "может работать с параметром шума в интервале от 0.0 до 1.0"
@@ -184,8 +184,8 @@ def Stable_diffusion_depth_to_image(binary_data, prompt, opt):
     else:
         do_full_sample = False
     t_enc = min(int(opt["strength"] * opt["ddim_steps"]), opt["ddim_steps"] - 1)
-    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["ckpt"]][1]])
-    model = load_model_from_config(config, checkpoint_path + checkpoint_list[opt["ckpt"]][0])
+    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["ckpt"]]])
+    model = load_model_from_config(config, checkpoint_path + opt["ckpt"])
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
     sampler = DDIMSampler(model)
@@ -236,14 +236,14 @@ def Stable_diffusion_depth_to_image(binary_data, prompt, opt):
 def Stable_diffusion_inpainting(binary_data, mask_data, prompt, opt):
     torch.set_grad_enabled(False)
     checkpoint_path = 'models\\ldm\\stable-diffusion\\inpainting\\'
-    checkpoint_list = [
-        ["512-inpainting-ema.safetensors", 1],
-        ["galaxytimemachines_v3.safetensors", 0],
-    ]
+    checkpoint_list = {
+        "512-inpainting-ema.safetensors": 1,
+        "galaxytimemachines_v3.safetensors": 0,
+    }
     config_path = "configs\\stable-diffusion\\"
     config_list = ["v1-inpainting-inference.yaml", "v2-inpainting-inference.yaml"]
-    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["ckpt"]][1]])
-    model = load_model_from_config(config, checkpoint_path + checkpoint_list[opt["ckpt"]][0])
+    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["ckpt"]]])
+    model = load_model_from_config(config, checkpoint_path + opt["ckpt"])
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
     sampler = DDIMSampler(model)
@@ -302,22 +302,20 @@ def Stable_diffusion_inpainting(binary_data, mask_data, prompt, opt):
     return b_data
 
 def Stable_diffusion_upscaler(binary_data, prompt, opt):
-    if opt["outscale"] != 4:
-        return Stable_diffusion_upscaler_xX(binary_data, prompt, opt)
     w, h = PIL.Image.open(io.BytesIO(binary_data)).convert("RGB").size
-    if w * h > pow(512, 2):
+    if opt["outscale"] != 4 or w * h > pow(opt["max_dim"], 2):
         return Stable_diffusion_upscaler_xX(binary_data, prompt, opt)
     torch.set_grad_enabled(False)
     checkpoint_path = "models\\ldm\\stable-diffusion\\upscaler\\"
-    checkpoint_list = [
-        "x4-upscaler-ema.safetensors"
-    ]
+    checkpoint_list = {
+        "x4-upscaler-ema.safetensors": 0
+    }
     config_path = "configs\\stable-diffusion\\"
     config_list = ["x4-upscaling.yaml"]
     image = load_img(binary_data, opt["max_dim"])
     w, h = image.size
     config = OmegaConf.load(config_path + config_list[0])
-    model = load_model_from_config(config, checkpoint_path + checkpoint_list[opt["ckpt"]], opt["verbose"])
+    model = load_model_from_config(config, checkpoint_path + opt["ckpt"], opt["verbose"])
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
     sampler = DDIMSampler(model)
