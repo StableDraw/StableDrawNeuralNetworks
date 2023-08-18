@@ -1,6 +1,7 @@
 from __future__ import print_function, division
 from PIL import Image
 import io
+import numpy
 import torch
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
@@ -9,7 +10,7 @@ from torchvision import models, transforms
 def Get_image_class(binary_data):
     cudnn.benchmark = True
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model_ft = models.resnet18(pretrained=True)
+    model_ft = models.resnet18(pretrained = True)
     num_ftrs = model_ft.fc.in_features
     model_ft.fc = nn.Linear(num_ftrs, 6)
     model = model_ft.to(device)
@@ -21,11 +22,16 @@ def Get_image_class(binary_data):
         transforms.ToTensor(), 
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
+    image = Image.open(io.BytesIO(binary_data))
     model.eval()
     with torch.no_grad():
-        sample = data_transforms(Image.open(io.BytesIO(binary_data)).convert("RGB"))
+        sample = data_transforms(image.convert("RGB"))
         inputs = sample.to(device)
         outputs = model(inputs.unsqueeze(0))
         _, preds = torch.max(outputs, 1)
         cl = int(preds[0])
-    return(cl)
+    pixels = numpy.array(image.convert("LAB"))
+    if numpy.std(pixels[:,:,1]) == 0 and numpy.std(pixels[:,:,2]) == 0:
+        return [cl, 1]
+    else:
+        return [cl, 0]

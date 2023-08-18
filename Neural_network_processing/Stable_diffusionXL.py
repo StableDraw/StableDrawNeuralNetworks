@@ -191,7 +191,7 @@ def init_embedder_options(opt, keys, init_dict, prompt = None, negative_prompt =
             value_dict["prompt"] = prompt
             value_dict["negative_prompt"] = negative_prompt
         if key == "original_size_as_tuple":
-            if opt["custom_orig_width"] == True:
+            if opt["custom_orig_size"] == True:
                 value_dict["orig_width"] = opt["orig_width"]
                 value_dict["orig_height"] = opt["orig_height"]
             else:
@@ -263,7 +263,7 @@ def get_guider(opt):
     if guider == "IdentityGuider":
         guider_config = {"target": "sgm.modules.diffusionmodules.guiders.IdentityGuider"}
     elif guider == "VanillaCFG":
-        scale = opt["cfg-scale"]
+        scale = opt["guidance_scale"]
         dyn_thresh_config = {"target": "sgm.modules.diffusionmodules.sampling_utils.NoDynamicThresholding"}
         guider_config = {
             "target": "sgm.modules.diffusionmodules.guiders.VanillaCFG",
@@ -591,9 +591,9 @@ if __name__ == "__main__":
         "m_k": 8, #Коэффициент улучшения при постобработке (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
         "aesthetic_score": 6.0, #Эстетический коэффициент (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
         "negative_aesthetic_score": 2.5, #Обратный эстетический коэффициент (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
-        "custom_orig_width": False, #Если применён, то меняет размеры входного изображения на "orig_width" и "orig_heigt", иначе оставляет равними размерам желаемого изображения
-        "orig_width": 1024, #Ширина входного изображения, если установлен параметр "custom_orig_width" (от 16)
-        "orig_heigt": 1024, #Высота входного изображения, если установлен параметр "custom_orig_width" (от 16)
+        "custom_orig_size": False, #Если применён, то меняет размеры входного изображения на "orig_width" и "orig_heigt", иначе оставляет равними размерам желаемого изображения
+        "orig_width": 1024, #Ширина входного изображения, если установлен параметр "custom_orig_size" (от 16)
+        "orig_heigt": 1024, #Высота входного изображения, если установлен параметр "custom_orig_size" (от 16)
         "crop_coords_top": 0, #Обрезка координат сверху (от 0)
         "crop_coords_left": 0, #Обрезка координат слева (от 0)
         "guider_discretization": "VanillaCFG", #Дискретизатор проводника? ("VanillaCFG", "IdentityGuider")
@@ -602,7 +602,7 @@ if __name__ == "__main__":
         "sigma_max": 14.61, #Только для "EDMDiscretization" дискритизатора обработчика
         "rho": 3.0, #Только для "EDMDiscretization" дискритизатора обработчика
         "num_cols": 2, #Количество столбцов? Не знаю что это (от 1 до 10)
-        "cfg-scale": 5.0, #Размер cfg (от 0.0 до 100.0)
+        "guidance_scale": 5.0, #Размер cfg (от 0.0 до 100.0)
         "steps": 40, #Количество шагов обработки (от 0 до 1000)
     }
     r = Stable_diffusion_XL_text_to_image(prompt, opt)
@@ -644,9 +644,9 @@ if __name__ == "__main__":
         "m_k": 8, #Коэффициент улучшения при постобработке (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
         "aesthetic_score": 6.0, #Эстетический коэффициент (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
         "negative_aesthetic_score": 2.5, #Обратный эстетический коэффициент (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
-        "custom_orig_width": False, #Если применён, то меняет размеры входного изображения на "orig_width" и "orig_heigt", иначе оставляет равними размерам желаемого изображения
-        "orig_width": 1024, #Ширина входного изображения, если установлен параметр "custom_orig_width" (от 16)
-        "orig_heigt": 1024, #Высота входного изображения, если установлен параметр "custom_orig_width" (от 16)
+        "custom_orig_size": False, #Если применён, то меняет размеры входного изображения на "orig_width" и "orig_heigt", иначе оставляет равними размерам желаемого изображения
+        "orig_width": 1024, #Ширина входного изображения, если установлен параметр "custom_orig_size" (от 16)
+        "orig_heigt": 1024, #Высота входного изображения, если установлен параметр "custom_orig_size" (от 16)
         "crop_coords_top": 0, #Обрезка координат сверху (от 0)
         "crop_coords_left": 0, #Обрезка координат слева (от 0)
         "guider_discretization": "VanillaCFG", #Дискретизатор проводника? ("VanillaCFG", "IdentityGuider")
@@ -655,7 +655,7 @@ if __name__ == "__main__":
         "sigma_max": 14.61, #Только для "EDMDiscretization" дискритизатора обработчика
         "rho": 3.0, #Только для "EDMDiscretization" дискритизатора обработчика
         "num_cols": 2, #Количество столбцов? Не знаю что это (от 1 до 10)
-        "cfg-scale": 5.0, #Размер cfg (от 0.0 до 100.0)
+        "guidance_scale": 5.0, #Размер cfg (от 0.0 до 100.0)
         "steps": 40, #Количество шагов обработки (от 0 до 1000)
     }
     with open("input.jpg", "rb") as f:

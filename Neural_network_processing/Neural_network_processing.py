@@ -11,30 +11,33 @@ import requests
 import websockets
 import PIL
 from PIL import Image
-import translators
-from deep_translator import single_detection
 from dotenv import load_dotenv
 from Image_caption_generator import Gen_caption
 from Delete_background import Delete_background
-from RealESRGAN import Upscale
-#from Stable_diffusion import Stable_diffusion_image_to_image
+from RealESRGAN import RealESRGAN_upscaler
+from Stable_diffusion import Stable_diffusion_image_to_image as Stable_diffusion_2_0_image_to_image
 from Stable_diffusionXL import Stable_diffusion_XL_image_to_image
-#from Stable_diffusion import Stable_diffusion_text_to_image
+from Stable_diffusion import Stable_diffusion_text_to_image as Stable_diffusion_2_0_text_to_image
 from Stable_diffusionXL import Stable_diffusion_XL_text_to_image
-from Stable_diffusion import Stable_diffusion_depth_to_image
+from Stable_diffusion import Stable_diffusion_depth_to_image as Stable_diffusion_2_0_depth_to_image
 from Stable_diffusion import Stable_diffusion_inpainting
 from Stable_diffusion import Stable_diffusion_upscaler
 from Stable_diffusion import Stable_diffusion_upscaler_xX
 from Image_classifier import Get_image_class
 from Image_сolorization import Image_сolorizer
+from Kandinsky_2 import Kandinsky2_text_to_image
+from Kandinsky_2 import Kandinsky2_image_to_image
+from Kandinsky_2 import Kandinsky2_inpainting
+from Kandinsky_2 import Kandinsky2_stylization
+from Kandinsky_2 import Kandinsky2_mix_images
+from Translate import Translator
 
 chat_id = "-1001661093241"
 
 with open("token.txt", "r") as f:
     TOKEN = f.read()
 
-with open("detect_language_key.txt", "r") as f:
-    DL_TOKEN = f.read()
+translator = Translator()
 
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
@@ -60,22 +63,6 @@ user_settings = {
     "autoprolinepreset": True,      #автоматически устанавливать пресет настроек для обработки профессионального лайна, если классификатор определил как профессиональный лайн
     "autoquicklinepreset": True     #автоматически устанавливать пресет настроек для обработки быстрого лайна, если классификатор определил как быстрый лайн
     }
-
-def translate(text, source_lang, dest_lang):
-    txt = text.encode().decode('utf-8')
-    f = source_lang.encode().decode('utf-8')
-    t = dest_lang.encode().decode('utf-8')
-    while True:
-        try:
-            r = translators.translate_text(txt, translator = 'google', from_language = f, to_language = t)
-            return r
-        except:
-            print("Error again...")
-    '''
-    except Exception as e:
-        logging.critical(e, exc_info=True)  # log exception info at CRITICAL log level
-    '''
-    return r
 
 def send_document_to_tg(req_text, tgfile):
     req = requests.post(req_text, files = tgfile)
@@ -384,13 +371,6 @@ def colorize(init_img_binary_data, image_class):
         params["clr_saturate_every_step"] = True
     return Image_сolorizer(init_img_binary_data, params) #передаю путь к рабочей папке и имя файла
 
-def is_black_and_white(bd):
-  pixels = numpy.array(Image.open(io.BytesIO(bd)).convert("LAB"))
-  if numpy.std(pixels[:,:,1]) == 0 and numpy.std(pixels[:,:,2]) == 0:
-    return True
-  else:
-    return False
-
 async def neural_processing(process, nprocess):
     if nprocess == True:
         return
@@ -467,10 +447,11 @@ async def neural_processing(process, nprocess):
                     need_restore = False
                 img_name = new_img_name + img_name + ".png"
             img_suf += 1
-
+            
             image_class = -1
             if init_img_binary_data != None and user_settings["autoclass"] == True:
-                image_class = Get_image_class(init_img_binary_data)
+                image_classes = Get_image_class(init_img_binary_data)
+                image_class = image_classes[0]
                 classes = [
                     "фото с лицом",
                     "фото без лица",
@@ -482,11 +463,8 @@ async def neural_processing(process, nprocess):
                 subclasses = [
                     "в цвете",
                     "чб"
-                    ]
-                if is_black_and_white(init_img_binary_data) == True:
-                    image_subclass = 1
-                else:
-                    image_subclass = 0
+                ]
+                image_subclass = image_classes[1]
                 chain_id = send_message_to_tg(URL + "sendMessage?text=" + "Определён класс: " + classes[image_class] + ", " + subclasses[image_subclass] + "&reply_to_message_id=" + chain_id + "&chat_id=" + chat_id)
                 if (not task_type in ['f', 'a', 'o']) and ((user_settings["autobwcolorize"] and image_subclass == 1) or (user_settings["autoproclr"] == True and image_class == 4) or (user_settings["autoquickclr"] == True and image_class == 5)):
                     postview = str(base64.b64encode(init_img_binary_data).decode("utf-8"))
@@ -532,7 +510,7 @@ async def neural_processing(process, nprocess):
                         f.write(english_caption)
                 chain_id = send_message_to_tg(URL + "sendMessage?text=" + english_caption + "&reply_to_message_id=" + chain_id + "&chat_id=" + chat_id)
                 if user_settings["autotranslate"] == True:                   
-                    caption = translate(english_caption, "en", user_settings["dest_lang"])
+                    _, caption = translator.translate(english_caption, "en", user_settings["dest_lang"])
                     with open(path_to_task_dir + "\\" + final_file_name + "_ru_" + str(img_suf) + ".txt", "w") as f:
                         f.write(caption)
                     time.sleep(0.3) #иметь ввиду, что тут слип, убрать его потом, после отключения от Телеги (убрать)
@@ -562,43 +540,46 @@ async def neural_processing(process, nprocess):
                 if postview == None:
                     postview = str(base64.b64encode(init_img_binary_data).decode('utf-8'))
                 message_id = chain_id
-                if Is_depth == True:
+                if Is_inpainting == True:
                     params = {
-                        "ddim_steps": 50,                       #Шаги DDIM, от 0 до 50
-                        "ddim_eta": 0.0,                        #ddim η (η = 0.0 соответствует детерминированной выборке)
-                        "scale": 9.0,                           #от 0.1 до 30.0
-                        "strength": 0.9,                        #сила увеличения/уменьшения шума. 1.0 соответствует полному уничтожению информации в инициализирующем образе
-                        "ckpt": "512-depth-ema.safetensors",    #выбор весов модели ("512-depth-ema.safetensors")
-                        "seed": 42,                             #от 0 до 1000000
-                        "model_type": "dpt_hybrid",             #тип модели
-                        "verbose": True,
-                        "max_dim": pow(2048, 2)                 # я не могу генерировать на своей видюхе картинки больше 2048 на 2048
-                    }
-                    binary_data = Stable_diffusion_depth_to_image(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
-                elif Is_inpainting:
-                    params = {
-                        "ddim_steps": 50,                           #Шаги DDIM, от 0 до 50
-                        "ddim_eta": 0.0,                            #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
-                        "scale": 10.0,                              #от 0.1 до 30.0
+                        "version": "Kandinsky2.2",                  #"SD-2.0", "Kandinsky2.0", "Kandinsky2.1", "Kandinsky2.2"
+                        "progress": True,                           #Только для Kandinsky < 2.2 и обработчика "p_sampler"
+                        "dynamic_threshold_v": 99.5,                #Только для "Kandinsky2.0" и "dynamic_threshold"
+                        "denoised_type": "dynamic_threshold",       #("dynamic_threshold", "clip_denoised") только для "Kandinsky2.0"
+                        "negative_prior_prompt": "lowres, text, error, cropped, worst quality, low quality, jpeg artifacts, ugly, duplicate, morbid, mutilated, out of frame, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck, username, watermark, signature", #Только для Kandinsky > 2.0
+                        "negative_prompt": "",                      #Только для Kandinsky > 2.0
+                        "low_vram_mode": False,                     #Только для Kandinsky: режим для работы на малом количестве видеопамяти
+                        "sampler": "ddim_sampler",                  #("ddim_sampler", "plms_sampler", "p_sampler") для всех моделей, кроме Kandinsky 2.2
+                        "steps": 50,                                #Шаги от 0 до 50
+                        "prior_steps": 25,                          #Только для Kandinsky > 2.0
+                        "num_cols": 1,                              #Количество вариций изображений за одну генерацию
+                        "ddim_eta": 0.0,                            #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке, только для обработчика "ddim_sampler" и для всех версий, кроме Kandinsky 2.2
+                        "guidance_scale": 10.0,                     #от 0.1 до 30.0
+                        "prior_scale": 4,                           #Только для Kandinsky > 2.0
                         "strength": 0.9,                            #сила увеличения/уменьшения шума. 1.0 соответствует полному уничтожению информации в инициализирующем образе
                         "ckpt": "512-inpainting-ema.safetensors",   #выбор весов модели ("512-inpainting-ema.safetensors")
                         "seed": 42,                                 #от 0 до 1000000
-                        "verbose": False,
+                        "verbose": False,                           #понятия не имею что это
                         "max_dim": pow(2048, 2)                     #я не могу генерировать на своей видюхе картинки больше 2048 на 2048
                     }
-                    binary_data = Stable_diffusion_inpainting(init_img_binary_data, mask_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла и параметры
-                elif Is_upscale == True:
+                    if params["version"] == "SD-2.0":
+                        binary_data = Stable_diffusion_inpainting(init_img_binary_data, mask_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла и параметры
+                    else:
+                        binary_data = Kandinsky2_inpainting(init_img_binary_data, mask_binary_data, caption, params)[0]
+                        
+                elif Is_upscale == True or Is_upscale_xX == True:
                     params = {
-                        "ddim_steps": 50,                       #Шаги DDIM, от 2 до 250
+                        "model": "StableDiffusionx4Upscaler", #("StableDiffusionx4Upscaler", "StableDiffusionxLatentx2Upscaler")
+                        "steps": 50,                            #Шаги DDIM, от 2 до 250
                         "ddim_eta": 0.0,                        #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
-                        "scale": 9.0,                           #от 0.1 до 30.0
-                        "ckpt": "x4-upscaler-ema.safetensors",  #выбор весов модели ("x4-upscaler-ema.safetensors")
+                        "guidance_scale": 9.0,                  #от 0.1 до 30.0
+                        "ckpt": "x4-upscaler-ema.safetensors",  #выбор весов модели ("x4-upscaler-ema.safetensors", только для модели "StableDiffusionx4Upscaler")
                         "seed": 42,                             #от 0 до 1000000
-                        "outscale": 4,                          #Величина того, во сколько раз увеличть разшрешение изображения
+                        "outscale": 4,                          #Величина того, во сколько раз увеличть разшрешение изображения (рекоммендуется 4 для "StableDiffusionx4Upscaler" и 2 для "StableDiffusionxLatentx2Upscaler")
                         "noise_augmentation": 20,               #от 0 до 350
                         "negative_prompt": None,                #отрицательное описание (если без него, то None)
                         "verbose": False,
-                        "max_dim": pow(512, 2)                  #я не могу генерировать на своей видюхе картинки больше 512 на 512 для x4 и 512 на 512 для x2
+                        "max_dim": pow(1024, 2)                  #я не могу генерировать на своей видюхе картинки больше 512 на 512 для x4 и 512 на 512 для x2
                     }
                     outscale = params["outscale"]
                     if need_restore:
@@ -606,44 +587,40 @@ async def neural_processing(process, nprocess):
                         rbufer[2] *= outscale
                         rbufer[3] *= outscale
                         rbufer[4] *= outscale
-                    binary_data = Stable_diffusion_upscaler(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
-                elif Is_upscale_xX == True:
-                    params = {
-                        "ddim_steps": 20,           #Шаги DDIM, от 2 до 250
-                        "ddim_eta": 0.0,            #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
-                        "scale": 9.0,               #от 0.1 до 30.0
-                        "seed": 42,                 #от 0 до 1000000
-                        "outscale": 2,              #Величина того, во сколько раз увеличть разшрешение изображения
-                        "noise_augmentation": 0.0,   #от 0 до 350
-                        "negative_prompt": None,    #отрицательное описание (если без него, то None)
-                        "verbose": False,
-                        "max_dim": pow(1024, 2)      # я не могу обрабатывать на своей видюхе картинки больше 1024 на 1024
-                    }
-                    outscale = params["outscale"]
-                    if need_restore:
-                        rbufer[1] *= outscale
-                        rbufer[2] *= outscale
-                        rbufer[3] *= outscale
-                        rbufer[4] *= outscale
-                    binary_data = Stable_diffusion_upscaler_xX(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
+                    if params["model"] == "StableDiffusionx4Upscaler":
+                        binary_data = Stable_diffusion_upscaler(init_img_binary_data, caption, params)
+                    elif params["model"] == "StableDiffusionx4Upscaler":
+                        binary_data = Stable_diffusion_upscaler_xX(init_img_binary_data, caption, params)
+                    else:
+                        raise ValueError("Доступны только \"StableDiffusionx4Upscaler\" и \"StableDiffusionx4Upscaler\"")
+
                 else:
                     params = {
                         "add_watermark": False, #Добавлять невидимую вотермарку
-                        "version": "SDXL-base-1.0", # Выбор модели: "SDXL-base-1.0", "SDXL-base-0.9" (недоступна для коммерческого использования), "SD-2.1", "SD-2.1-768", "SDXL-refiner-0.9" (недоступна для коммерческого использования, используется как модель 2 стадии, для первой непригодна),  "SDXL-refiner-1.0" (используется как модель 2 стадии, для первой непригодна)
-                        "use_custom_ckpt": False, #Использовать свои веса для выбранной версии модели
-                        "custom_ckpt_name": "SDXL-base-1.0", #Имя кастомной модели, если выбран "use_custom_ckpt"
+                        "version": "SDXL-base-1.0", #Выбор версии: "SDXL-base-1.0", "SDXL-base-0.9" (недоступна для коммерческого использования), "SD-2.0", "SD-2.1", "SD-2.1-768", "SDXL-refiner-0.9" (недоступна для коммерческого использования, используется как модель 2 стадии, для первой непригодна),  "SDXL-refiner-1.0" (используется как модель 2 стадии, для первой непригодна), "Kandinsky2.0", "Kandinsky2.1", "Kandinsky2.2"
+                        "ControlNET": False, #Только для "Kandinsky2.2"
+                        "progress": True, #Только для Kandinsky < 2.2 и обработчика "p_sampler"
+                        "Depth": True, #Использовать дополнительный слой глубины (только для версий "Kandinsky2.2" ControlNET и версий "SD-2.0")
+                        "use_custom_ckpt": False, #Использовать свои веса для выбранной версии модели (для всех версий кроме SD-2.0)
+                        "custom_ckpt_name": "512-depth-ema.safetensors", #Имя кастомной модели, если выбран "use_custom_ckpt". Является обязательным параметром для версии SD-2.0. (SD-2.0: "512-depth-ema.safetensors" для Depth == True, и "sd-v1-1.safetensors", "sd-v1-1-full-ema.safetensors", "sd-v1-2.safetensors", "sd-v1-2-full-ema.safetensors", "sd-v1-3.safetensors", "sd-v1-3-full-ema.safetensors", "sd-v1-4.safetensors", "sd-v1-4-full-ema.safetensors", "sd-v1-5.safetensors", "sd-v1-5-full-ema.safetensors" для Depth == False)
                         "low_vram_mode": False, #Режим для работы на малом количестве видеопамяти
                         "version2SDXL-refiner": False, #Только для версий SDXL-base: загрузить SDXL-refiner как модель для второй стадии обработки. Требует более длительной обработки и больше видеопамяти
                         "seed": 42, #Инициализирующее значение (может быть от 0 до 1000000000)
-                        "negative_prompt": "", #Для всех моделей, кроме SDXL-base: негативное описание
+                        "negative_prompt": "", #Для всех моделей, кроме SDXL-base и Kandinsky 2.0: негативное описание
+                        "negative_prior_prompt": "lowres, text, error, cropped, worst quality, low quality, jpeg artifacts, ugly, duplicate, morbid, mutilated, out of frame, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck, username, watermark, signature", #Только для Kandinsky > 2.0
                         "refiner": "SDXL-refiner-1.0", #Если "version2SDXL-refiner" выбран, то какую версию модели для второй стадии обработки загрузить: "SDXL-refiner-1.0", "SDXL-refiner-0.9"  (недоступна для коммерческого использования)
                         "refinement_strength": 0.15, #Сила вклада обработки на второй стадии (от 0.0 до 1.0)
                         "finish_denoising": True, #Завершить удаление шума рафинёром (только для моделей SDXL-base, если включён version2SDXL-refiner)
-                        "h": 1024, #Высота желаемого изображения (от 64 до 2048, должна быть кратна 64)
-                        "w": 1024, #Ширина желаемого изображения (от 64 до 2048, должна быть кратна 64)
+                        "h": 1024, #Высота желаемого изображения (от 64 до 2048, должна быть кратна 64, для "SD-2.0" рекомендуется 512)
+                        "w": 1024, #Ширина желаемого изображения (от 64 до 2048, должна быть кратна 64, для "SD-2.0" рекомендуется 512)
                         "f": 8, #Коэффициент понижающей дискретизации, чаще всего 8 или 16 (можно 4, тогда есть риск учетверения, но красиво и жрёт больше видеопамяти) (От 4 до 64), если (4 можно, если w * h <= 1024 * 1024, иначе > 4)
                         "use_recommended_res": True, #Использовать рекомендованное для каждой модели разрешение генерации, вместо указанных выше
-                        "sampler": "EulerEDMSampler", #Обработчик ("EulerEDMSampler", "HeunEDMSampler", "EulerAncestralSampler", "DPMPP2SAncestralSampler", "DPMPP2MSampler", "LinearMultistepSampler")
+                        "sampler": "EulerEDMSampler", #Обработчик (("EulerEDMSampler", "HeunEDMSampler", "EulerAncestralSampler", "DPMPP2SAncestralSampler", "DPMPP2MSampler", "LinearMultistepSampler") только для моделей кроме Kandinsky и SD-2.0), (("ddim_sampler", "plms_sampler", "p_sampler") Только для Kandinsky < 2.2)
+                        "ddim_eta": 0.0, #Только для моделей ("SD-2.0" и Kandinsky < 2.2) и обработчика ddim, η (η = 0.0 соответствует детерминированной выборке)
+                        "dynamic_threshold_v": 99.5, #Только для "Kandinsky2.0" и "dynamic_threshold"
+                        "denoised_type": "dynamic_threshold", #("dynamic_threshold", "clip_denoised") только для "Kandinsky2.0"
+                        "model_type": "dpt_hybrid", #Только для модели "SD-2.0", тип модели ("dpt_large", "dpt_hybrid", "midas_v21", "midas_v21_small")
+                        "verbose": True, #Не знаю что это
                         "s_churn": 0.0,  #Только для обработчиков "EulerEDMSampler" или "HeunEDMSampler" (от 0.0 до 1.0)
                         "s_tmin": 0.0, #Только для обработчиков ("EulerEDMSampler" или "HeunEDMSampler") и "s_churn" > 0, обнуляет сигмы меньше этого значения (от 0.0 до "sigma_max" и < "s_tmax")
                         "s_tmax": 999.0,  #Только для обработчиков ("EulerEDMSampler" или "HeunEDMSampler") и "s_churn" > 0, обнуляет сигмы больше этого значения (от "sigma_min" до "sigma_max" и > "s_tmin")
@@ -652,12 +629,14 @@ async def neural_processing(process, nprocess):
                         "order": 4, #Только для обработчика "LinearMultistepSampler" (от 1)
                         "force_i2i_resolution": False, #Если выбран, то размер итогового изображения для I2I генерации будет взят из параметров (w, h), а не у исходного изображения
                         "i2i_strength": 0.75, #вклад в генерацию модели в режиме I2I (от 0.0 до 1.0)
+                        "i2i_prior_strength": 0.85, #Только для "Kandinsky2.2" с "ControlNET"
+                        "i2i_negative_prior_strength": 1.0, #Только для "Kandinsky2.2" с "ControlNET"
                         "m_k": 8, #Коэффициент улучшения при постобработке (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
                         "aesthetic_score": 6.0, #Эстетический коэффициент (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
                         "negative_aesthetic_score": 2.5, #Обратный эстетический коэффициент (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
-                        "custom_orig_width": False, #Если применён, то меняет размеры входного изображения на "orig_width" и "orig_heigt", иначе оставляет равними размерам желаемого изображения
-                        "orig_width": 1024, #Ширина входного изображения, если установлен параметр "custom_orig_width" (от 16)
-                        "orig_heigt": 1024, #Высота входного изображения, если установлен параметр "custom_orig_width" (от 16)
+                        "custom_orig_size": False, #Если применён, то меняет размеры входного изображения на "orig_width" и "orig_heigt", иначе оставляет равними размерам желаемого изображения
+                        "orig_width": 1024, #Ширина входного изображения, если установлен параметр "custom_orig_size" (от 16)
+                        "orig_heigt": 1024, #Высота входного изображения, если установлен параметр "custom_orig_size" (от 16)
                         "crop_coords_top": 0, #Обрезка координат сверху (от 0)
                         "crop_coords_left": 0, #Обрезка координат слева (от 0)
                         "guider_discretization": "VanillaCFG", #Дискретизатор проводника? ("VanillaCFG", "IdentityGuider")
@@ -666,24 +645,25 @@ async def neural_processing(process, nprocess):
                         "sigma_max": 14.61, #Только для "EDMDiscretization" дискритизатора обработчика
                         "rho": 3.0, #Только для "EDMDiscretization" дискритизатора обработчика
                         "num_cols": 1, #Количество возвращаемых изображений (от 1 до 10, но, думаю, можно и больше при желании)
-                        "cfg-scale": 5.0, #Размер cfg (от 0.0 до 100.0)
+                        "guidance_scale": 9.0,
+                        "prior_scale": 4, #Только для Kandinsky > 2.0
                         "steps": 40, #Количество шагов обработки (от 0 до 1000)
+                        "prior_steps": 25, #Только для Kandinsky > 2.0
                         "max_dim": pow(2048, 2) # я не могу генерировать на своей видюхе картинки больше 2048 на 2048
                     }
-                    binary_data = Stable_diffusion_XL_image_to_image(init_img_binary_data, caption, params)[0]
-                '''
-                    params = {
-                        "ddim_steps": 50,               #количество шагов выборки ddim
-                        "ddim_eta": 0.0,                #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
-                        "f": 8,                         #коэффициент понижающей дискретизации, чаще всего 8 или 16 (можно 4, тогда есть риск учетверения, но красиво)
-                        "scale": 9.0,                   #безусловная навигационная величина: eps = eps(x, empty) + scale * (eps(x, cond) - eps(x, empty))
-                        "strength": 0.7,                #сила увеличения/уменьшения шума. 1.0 соответствует полному уничтожению информации в инициализирующем образе
-                        "ckpt": "sd-v1-1.safetensors",  #выбор весов модели ("sd-v1-1.safetensors", "sd-v1-1-full-ema.safetensors", "sd-v1-2.safetensors", "sd-v1-2-full-ema.safetensors", "sd-v1-3.safetensors", "sd-v1-3-full-ema.safetensors", "sd-v1-4.safetensors", "sd-v1-4-full-ema.safetensors", "sd-v1-5.safetensors", "sd-v1-5-full-ema.safetensors": 0)
-                        "seed": 42,                     #сид (для воспроизводимой генерации изображений)
-                        "max_dim": pow(512, 2)          #я не могу генерировать на своей видюхе картинки больше 512 на 512
-                    }
-                    binary_data = Stable_diffusion_image_to_image(init_img_binary_data, caption, params) #передаю сокет, путь к рабочей папке, имя файла, и true если AI описание, false если человеческая
-                '''
+                    if "Kandinsky" in params["version"]:
+                        binary_data = Kandinsky2_image_to_image(init_img_binary_data, caption, params)
+                    elif params["version"] == "SD-2.0":
+                        binary_data = Stable_diffusion_2_0_image_to_image(init_img_binary_data, caption, params)
+                    else:
+                        if Is_depth == True:
+                            params["custom_ckpt_name"] = "512-depth-ema.safetensors"
+                            params["version"] = "SD-2.0"
+                            params["w"] = 512
+                            params["h"] = 512
+                            binary_data = Stable_diffusion_2_0_depth_to_image(init_img_binary_data, caption, params)
+                        else:
+                            binary_data = Stable_diffusion_XL_image_to_image(init_img_binary_data, caption, params)[0]
                 result_img = final_file_name + "_" + str(img_suf)
                 image = PIL.Image.open(io.BytesIO(binary_data)).convert("RGB")
                 w, h = image.size
@@ -770,7 +750,7 @@ async def neural_processing(process, nprocess):
                 if user_settings["autofaceenchance"] == True and image_class == 0:
                     params["face_enhance"] = True
                 outscale = params["outscale"]
-                binary_data = Upscale(init_img_binary_data, params) #передаю путь к рабочей папке
+                binary_data = RealESRGAN_upscaler(init_img_binary_data, params) #передаю путь к рабочей папке
                 result_img = final_file_name + "_" + str(img_suf)
                 image = PIL.Image.open(io.BytesIO(binary_data)).convert("RGB")
                 w, h = image.size
@@ -805,21 +785,28 @@ async def neural_processing(process, nprocess):
                 caption = task[2]
                 params = {
                     "add_watermark": False, #Добавлять невидимую вотермарку
-                    "version": "SDXL-base-1.0", # Выбор модели: "SDXL-base-1.0", "SDXL-base-0.9" (недоступна для коммерческого использования), "SD-2.1", "SD-2.1-768", "SDXL-refiner-0.9" (недоступна для коммерческого использования, используется как модель 2 стадии, для первой непригодна),  "SDXL-refiner-1.0" (используется как модель 2 стадии, для первой непригодна)
+                    "version": "SDXL-base-1.0", # Выбор модели: "SDXL-base-1.0", "SDXL-base-0.9", "Kandinsky2.0", "Kandinsky2.1", "Kandinsky2.2", (недоступна для коммерческого использования), "SD-2.0", "SD-2.1", "SD-2.1-768", "SDXL-refiner-0.9" (недоступна для коммерческого использования, используется как модель 2 стадии, для первой непригодна), "SDXL-refiner-1.0" (используется как модель 2 стадии, для первой непригодна)
+                    "ControlNET": False, #Только для "Kandinsky2.2"
+                    "use_flash_attention": False, #Только для "Kandinsky"
+                    "progress": True, #Только для Kandinsky < 2.2 и обработчика "p_sampler"
+                    "dynamic_threshold_v": 99.5, #Только для "Kandinsky2.0" и "dynamic_threshold"
+                    "denoised_type": "dynamic_threshold", #("dynamic_threshold", "clip_denoised") только для "Kandinsky2.0"
                     "use_custom_ckpt": False, #Использовать свои веса для выбранной версии модели
-                    "custom_ckpt_name": "SDXL-base-1.0", #Имя кастомной модели, если выбран "use_custom_ckpt"
+                    "custom_ckpt_name": "v2-1_512-ema-pruned.safetensors", #Имя кастомной модели, либо (если выбран "use_custom_ckpt", обязательный параметр), либо (для модели "SD-2.0", как обязательный параметр. Может быть "v2-1_512-ema-pruned.safetensors", "v2-1_512-nonema-pruned.safetensors", "v2-1_768-ema-pruned.safetensors", "v2-1_768-nonema-pruned.safetensors")
                     "low_vram_mode": False, #Режим для работы на малом количестве видеопамяти
                     "version2SDXL-refiner": False, #Только для версий SDXL-base: загрузить SDXL-refiner как модель для второй стадии обработки. Требует более длительной обработки и больше видеопамяти
                     "seed": 42, #Инициализирующее значение (может быть от 0 до 1000000000)
-                    "negative_prompt": "", #Для всех моделей, кроме SDXL-base: негативное описание
+                    "negative_prompt": "", #Для всех моделей, кроме (SDXL-base и Kandinsky 2.0): негативное описание
+                    "negative_prior_prompt": "lowres, text, error, cropped, worst quality, low quality, jpeg artifacts, ugly, duplicate, morbid, mutilated, out of frame, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck, username, watermark, signature", #Только для Kandinsky > 2.0
                     "refiner": "SDXL-refiner-1.0", #Если "version2SDXL-refiner" выбран, то какую версию модели для второй стадии обработки загрузить: "SDXL-refiner-1.0", "SDXL-refiner-0.9"  (недоступна для коммерческого использования)
                     "refinement_strength": 0.15, #Сила вклада обработки на второй стадии (от 0.0 до 1.0)
                     "finish_denoising": True, #Завершить удаление шума рафинёром (только для моделей SDXL-base, если включён version2SDXL-refiner)
-                    "h": 1024, #Высота желаемого изображения (от 64 до 2048, должна быть кратна 64)
-                    "w": 1024, #Ширина желаемого изображения (от 64 до 2048, должна быть кратна 64)
+                    "h": 1024, #Высота желаемого изображения (от 64 до 2048, должна быть кратна 64) (512 для Kandinsky 2.0 и SD 512, 768 для Kandinsky 2.1 и SD 2.1 768 и 1024 для Kandinsky 2.2 и SDXL)
+                    "w": 1024, #Ширина желаемого изображения (от 64 до 2048, должна быть кратна 64) (512 для Kandinsky 2.0 и SD 512, 768 для Kandinsky 2.1 и SD 2.1 768 и 1024 для Kandinsky 2.2 и SDXL)
                     "f": 8, #Коэффициент понижающей дискретизации, чаще всего 8 или 16 (можно 4, тогда есть риск учетверения, но красиво и жрёт больше видеопамяти) (От 4 до 64), если (4 можно, если w * h <= 1024 * 1024, иначе > 4)
                     "use_recommended_res": True, #Использовать рекомендованное для каждой модели разрешение генерации, вместо указанных выше
-                    "sampler": "EulerEDMSampler", #Обработчик ("EulerEDMSampler", "HeunEDMSampler", "EulerAncestralSampler", "DPMPP2SAncestralSampler", "DPMPP2MSampler", "LinearMultistepSampler")
+                    "sampler": "EulerEDMSampler", #Обработчик (Для SD > 2.0: "EulerEDMSampler", "HeunEDMSampler", "EulerAncestralSampler", "DPMPP2SAncestralSampler", "DPMPP2MSampler", "LinearMultistepSampler") и (Kandinsky < 2.2 или SD-2.0: "ddim_sampler", "plms_sampler", "p_sampler")
+                    "ddim_eta": 0.05, #только для обработчика "ddim_sampler" и (SD-2.0 или Kandinsky < 2.2)
                     "s_churn": 0.0,  #Только для обработчиков "EulerEDMSampler" или "HeunEDMSampler" (от 0.0 до 1.0)
                     "s_tmin": 0.0, #Только для обработчиков ("EulerEDMSampler" или "HeunEDMSampler") и "s_churn" > 0, обнуляет сигмы меньше этого значения (от 0.0 до "sigma_max" и < "s_tmax")
                     "s_tmax": 999.0,  #Только для обработчиков ("EulerEDMSampler" или "HeunEDMSampler") и "s_churn" > 0, обнуляет сигмы больше этого значения (от "sigma_min" до "sigma_max" и > "s_tmin")
@@ -829,9 +816,9 @@ async def neural_processing(process, nprocess):
                     "m_k": 8, #Коэффициент улучшения при постобработке (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
                     "aesthetic_score": 6.0, #Эстетический коэффициент (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
                     "negative_aesthetic_score": 2.5, #Обратный эстетический коэффициент (если активирован version2SDXL-refiner и модель SDXL-base) (понятия не имею от скольки до скольки он может быть, надо тестить)
-                    "custom_orig_width": False, #Если применён, то меняет размеры входного изображения на "orig_width" и "orig_heigt", иначе оставляет равними размерам желаемого изображения
-                    "orig_width": 1024, #Ширина входного изображения, если установлен параметр "custom_orig_width" (от 16)
-                    "orig_heigt": 1024, #Высота входного изображения, если установлен параметр "custom_orig_width" (от 16)
+                    "custom_orig_size": False, #Если применён, то меняет размеры входного изображения на "orig_width" и "orig_heigt", иначе оставляет равними размерам желаемого изображения
+                    "orig_width": 1024, #Ширина входного изображения, если установлен параметр "custom_orig_size" (от 16)
+                    "orig_heigt": 1024, #Высота входного изображения, если установлен параметр "custom_orig_size" (от 16)
                     "crop_coords_top": 0, #Обрезка координат сверху (от 0)
                     "crop_coords_left": 0, #Обрезка координат слева (от 0)
                     "guider_discretization": "VanillaCFG", #Дискретизатор проводника? ("VanillaCFG", "IdentityGuider")
@@ -840,23 +827,18 @@ async def neural_processing(process, nprocess):
                     "sigma_max": 14.61, #Только для "EDMDiscretization" дискритизатора обработчика
                     "rho": 3.0, #Только для "EDMDiscretization" дискритизатора обработчика
                     "num_cols": 1, #Количество возвращаемых изображений (от 1 до 10, но, думаю, можно и больше при желании)
-                    "cfg-scale": 5.0, #Размер cfg (от 0.0 до 100.0)
-                    "steps": 40 #Количество шагов обработки (от 0 до 1000)
+                    "prior_scale": 4, #Только для Kandinsky > 2.0
+                    "guidance_scale": 5.0, #Величина guidance (от 0.0 до 100.0)
+                    "steps": 40, #Количество шагов обработки (от 0 до 1000)
+                    "prior_steps": 25, #Только для Kandinsky > 2.0
                     #на данный момент "max_dim": 8 * pow(2048, 2) / f
                 }
-                binary_data = Stable_diffusion_XL_text_to_image(caption, params)[0]
-                '''
-                params = {
-                    "steps": 50,                                #количество шагов выборки
-                    "sampler": "plms",                          #обработчик (доступно "plms", "dpm" и "ddim")
-                    "ddim_eta": 0.0,                            #работает только при установке обработчика ddim, (значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке)
-                    "f": 8,                                     #коэффициент понижающей дискретизации, чаще всего 8 или 16, если поставить 4, будет красиво, но учетверяться
-                    "scale": 9.0,                               #безусловная навигационная величина: eps = eps(x, empty) + scale * (eps(x, cond) - eps(x, empty))
-                    "ckpt": "v2-1_512-ema-pruned.safetensors",  #выбор контрольной точки модели ("v2-1_512-ema-pruned.safetensors", "v2-1_512-nonema-pruned.safetensors", "v2-1_768-ema-pruned.safetensors", "v2-1_768-nonema-pruned.safetensors")
-                    "seed": 42                                  #сид (для воспроизводимой генерации изображений)
-                }
-                binary_data = Stable_diffusion_text_to_image(caption, params) #передаю сокет, путь к рабочей папке, имя файла и параметры генерации
-                '''
+                if params["version"] == "SD-2.0":
+                    binary_data = Stable_diffusion_2_0_text_to_image(caption, params)
+                elif "Kandinsky" in params["version"]:
+                    binary_data = Kandinsky2_text_to_image(caption, params)[0]
+                else:
+                    binary_data = Stable_diffusion_XL_text_to_image(caption, params)[0]
                 image = PIL.Image.open(io.BytesIO(binary_data)).convert("RGB")
                 w, h = image.size
                 image.save(path_to_task_dir + "\\tpicture_1.png")
@@ -1105,15 +1087,13 @@ async def pre_processing(websocket, dictData_list):
                     img_name = dictData["img_name"]
                     img_suf = int(dictData["img_suf"])
                 if need_make_text_file:
-                    lang = single_detection(dictData["prompt"], api_key = DL_TOKEN)
+                    lang, result_text = translator.translate(dictData["prompt"])
                     if lang != "en":
                         with open(task_dir + "\\Human_caption_ru_" + str(img_suf) + ".txt", "w") as f:
                             f.write(dictData["prompt"])
-                        time.sleep(0.3) #иметь ввиду, что тут слип, убрать его потом, после отключения от Телеги (убрать)
-                        result_text = translate(dictData["prompt"], lang, 'en')
+                        time.sleep(0.3)
                         message_id = send_message_to_tg(URL + "sendMessage?text=" + result_text + "&reply_to_message_id=" + task_id + "&chat_id=" + chat_id)
                     else:
-                        result_text = dictData["prompt"]
                         message_id = task_id
                     with open(task_dir + "\\Human_caption_" + str(img_suf) + ".txt", "w") as f:
                         f.write(result_text)
@@ -1173,14 +1153,12 @@ async def pre_processing(websocket, dictData_list):
         elif(dictData["type"] == "t"): #нужно сгенерировать изображение по описанию
             prompt = dictData["prompt"]
             task_id = send_message_to_tg(URL + "sendMessage?text=" + prompt + "&chat_id=" + chat_id)
-            lang = single_detection(prompt, api_key = DL_TOKEN)
+            lang, result_text = translator.translate(prompt)
             if lang != "en":
                 time.sleep(0.3) #иметь ввиду, что тут слип, убрать его потом, после отключения от Телеги (убрать)
-                result_text = translate(prompt, lang, 'en')
                 message_id = send_message_to_tg(URL + "sendMessage?text=" + result_text + "&reply_to_message_id=" + task_id + "&chat_id=" + chat_id)
             else:
                 message_id = task_id
-                result_text = prompt
             task_dir = user_path + "\\" + task_id
             os.mkdir(task_dir)
             with open(task_dir + "\\Human_caption_0.txt", "w") as f:

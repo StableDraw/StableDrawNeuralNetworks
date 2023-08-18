@@ -81,17 +81,17 @@ def Stable_diffusion_text_to_image(prompt, opt):
     config_list = ["v1-inference.yaml", "v2-inference.yaml"]
     w = 512
     h = 512
-    if ("1_768" in opt["ckpt"]):
+    if ("1_768" in opt["custom_ckpt_name"]):
         w = 768
         h = 768
     seed_everything(opt["seed"])
-    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["ckpt"]]])
-    model = load_model_from_config(config, checkpoint_path + opt["ckpt"])
+    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["custom_ckpt_name"]]])
+    model = load_model_from_config(config, checkpoint_path + opt["custom_ckpt_name"])
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
-    if opt["sampler"] == "plms":
+    if opt["sampler"] == "plms_sampler":
         sampler = PLMSSampler(model)
-    elif opt["sampler"] == "dpm":
+    elif opt["sampler"] == "p_sampler":
         sampler = DPMSolverSampler(model)
         opt["steps"] += 1
     else:
@@ -100,13 +100,13 @@ def Stable_diffusion_text_to_image(prompt, opt):
     with torch.no_grad(), \
         precision_scope("cuda"), \
         model.ema_scope():
-            if opt["scale"] != 1.0:
+            if opt["guidance_scale"] != 1.0:
                 uc = model.get_learned_conditioning([""])
             else:
                 uc = None
             c = model.get_learned_conditioning([prompt])
             shape = [4, h // opt["f"], w // opt["f"]]
-            samples, _ = sampler.sample(S = opt["steps"], conditioning = c, batch_size = 1, shape = shape, verbose = False, unconditional_guidance_scale = opt["scale"], unconditional_conditioning = uc, eta = opt["ddim_eta"], x_T = None)
+            samples, _ = sampler.sample(S = opt["steps"], conditioning = c, batch_size = 1, shape = shape, verbose = False, unconditional_guidance_scale = opt["guidance_scale"], unconditional_conditioning = uc, eta = opt["ddim_eta"], x_T = None)
             x_sample = 255. * rearrange(torch.clamp((model.decode_first_stage(samples) + 1.0) / 2.0, min = 0.0, max = 1.0)[0].cpu().numpy(), 'c h w -> h w c')
             img = PIL.Image.fromarray(x_sample.astype(numpy.uint8))
             buf = io.BytesIO()
@@ -133,23 +133,29 @@ def Stable_diffusion_image_to_image(binary_data, prompt, opt):
     }
     config_path = "configs\\stable-diffusion\\"
     config_list = ["v1-inference.yaml", "v2-inference.yaml"]
-    seed_everything(opt['seed'])
-    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["ckpt"]]])
-    model = load_model_from_config(config, checkpoint_path + opt["ckpt"])
+    seed_everything(opt["seed"])
+    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["custom_ckpt_namet"]]])
+    model = load_model_from_config(config, checkpoint_path + opt["custom_ckpt_name"])
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
-    sampler = DDIMSampler(model)
+    if opt["sampler"] == "plms_sampler":
+        sampler = PLMSSampler(model)
+    elif opt["sampler"] == "p_sampler":
+        sampler = DPMSolverSampler(model)
+        opt["steps"] += 1
+    else:
+        sampler = DDIMSampler(model)
     init_image = repeat(torch.from_numpy(2.0 * (numpy.array(load_img(binary_data, opt["max_dim"])).astype(numpy.float32) / 255.0)[None].transpose(0, 3, 1, 2) - 1.).to(device), '1 ... -> b ...', b = 1)
     init_latent = model.get_first_stage_encoding(model.encode_first_stage(init_image))  # переместить в латентное пространство
-    sampler.make_schedule(ddim_num_steps = opt['ddim_steps'], ddim_eta = opt['ddim_eta'], verbose = False)
-    assert 0. <= opt['strength'] <= 1., 'can only work with strength in [0.0, 1.0]'
-    t_enc = int(opt['strength'] * opt['ddim_steps'])
+    sampler.make_schedule(ddim_num_steps = opt["ddim_steps"], ddim_eta = opt["ddim_eta"], verbose = False)
+    assert 0. <= opt["i2i_strength"] <= 1., 'can only work with strength in [0.0, 1.0]'
+    t_enc = int(opt["i2i_strength"] * opt["ddim_steps"])
     print(f"Целевое декодирование t_enc из {t_enc} шагов")
     precision_scope = autocast
     with torch.no_grad():
         with precision_scope("cuda"):
             with model.ema_scope():
-                if opt['scale'] != 1.0:
+                if opt["guidance_scale"] != 1.0:
                     uc = model.get_learned_conditioning([""])
                 else:
                     uc = None
@@ -157,7 +163,7 @@ def Stable_diffusion_image_to_image(binary_data, prompt, opt):
                 # закодировать (скрытое масштабирование)
                 z_enc = sampler.stochastic_encode(init_latent, torch.tensor([t_enc]).to(device))
                 # раскодировать
-                samples = sampler.decode(z_enc, c, t_enc, unconditional_guidance_scale = opt['scale'], unconditional_conditioning = uc, )
+                samples = sampler.decode(z_enc, c, t_enc, unconditional_guidance_scale = opt["guidance_scale"], unconditional_conditioning = uc, )
                 x_sample = 255. * rearrange(torch.clamp((model.decode_first_stage(samples) + 1.0) / 2.0, min = 0.0, max = 1.0)[0].cpu().numpy(), 'c h w -> h w c')
                 img = PIL.Image.fromarray(x_sample.astype(numpy.uint8))
                 buf = io.BytesIO()
@@ -175,20 +181,26 @@ def Stable_diffusion_depth_to_image(binary_data, prompt, opt):
     }
     config_path = "configs\\stable-diffusion\\"
     config_list = ["v2-midas-inference.yaml"]
-    config = config_path + config_list[checkpoint_list[opt["ckpt"]]]
-    seed_everything(opt['seed'])
+    config = config_path + config_list[checkpoint_list["custom_ckpt_name"]]
+    seed_everything(opt["seed"])
     image = load_img(binary_data, opt["max_dim"])
-    assert 0. <= opt["strength"] <= 1., "может работать с параметром шума в интервале от 0.0 до 1.0"
-    if opt["strength"] == 1.:
+    assert 0. <= opt["i2i_strength"] <= 1., "может работать с параметром шума в интервале от 0.0 до 1.0"
+    if opt["i2i_strength"] == 1.:
         do_full_sample = True
     else:
         do_full_sample = False
-    t_enc = min(int(opt["strength"] * opt["ddim_steps"]), opt["ddim_steps"] - 1)
-    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["ckpt"]]])
-    model = load_model_from_config(config, checkpoint_path + opt["ckpt"])
+    t_enc = min(int(opt["i2i_strength"] * opt["steps"]), opt["steps"] - 1)
+    config = OmegaConf.load(config_path + config_list[checkpoint_list["custom_ckpt_name"]])
+    model = load_model_from_config(config, checkpoint_path + opt["custom_ckpt_name"])
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
-    sampler = DDIMSampler(model)
+    if opt["sampler"] == "plms_sampler":
+        sampler = PLMSSampler(model)
+    elif opt["sampler"] == "p_sampler":
+        sampler = DPMSolverSampler(model)
+        opt["steps"] += 1
+    else:
+        sampler = DDIMSampler(model)
     sampler.make_schedule(ddim_num_steps = opt['ddim_steps'], ddim_eta = opt['ddim_eta'], verbose = opt["verbose"])
     image = numpy.array(image.convert("RGB"))
     image = torch.from_numpy(image).to(dtype = torch.float32) / 127.5 - 1.0
@@ -223,7 +235,7 @@ def Stable_diffusion_depth_to_image(binary_data, prompt, opt):
         else:
             z_enc = torch.randn_like(z)
         # декодирование
-        samples = sampler.decode(z_enc, cond, t_enc, unconditional_guidance_scale = opt["scale"], unconditional_conditioning = uc_full, )
+        samples = sampler.decode(z_enc, cond, t_enc, unconditional_guidance_scale = opt["guidance_scale"], unconditional_conditioning = uc_full)
         x_sample = 255. * rearrange(torch.clamp((model.decode_first_stage(samples) + 1.0) / 2.0, min = 0.0, max = 1.0)[0].cpu().numpy(), 'c h w -> h w c')
     image = PIL.Image.fromarray(x_sample.astype(numpy.uint8))
     buf = io.BytesIO()
@@ -246,7 +258,13 @@ def Stable_diffusion_inpainting(binary_data, mask_data, prompt, opt):
     model = load_model_from_config(config, checkpoint_path + opt["ckpt"])
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
-    sampler = DDIMSampler(model)
+    if opt["sampler"] == "plms_sampler":
+        sampler = PLMSSampler(model)
+    elif opt["sampler"] == "p_sampler":
+        sampler = DPMSolverSampler(model)
+        opt["steps"] += 1
+    else:
+        sampler = DDIMSampler(model)
     sampler.make_schedule(ddim_num_steps = opt['ddim_steps'], ddim_eta = opt['ddim_eta'], verbose = opt["verbose"])
     image = load_img(binary_data, opt["max_dim"])
     w, h = image.size
@@ -290,7 +308,7 @@ def Stable_diffusion_inpainting(binary_data, mask_data, prompt, opt):
             uc_cross = model.get_unconditional_conditioning(1, "")
             uc_full = {"c_concat": [c_cat], "c_crossattn": [uc_cross]}
             shape = [model.channels, h // 8, w // 8]
-            samples_cfg = sampler.sample(opt["ddim_steps"], 1, shape, cond, opt["verbose"], eta = opt["ddim_eta"], unconditional_guidance_scale=opt["scale"], unconditional_conditioning=uc_full, x_T=start_code, )[0]
+            samples_cfg = sampler.sample(opt["steps"], 1, shape, cond, opt["verbose"], eta = opt["ddim_eta"], unconditional_guidance_scale = opt["guidance_scale"], unconditional_conditioning=uc_full, x_T=start_code, )[0]
             x_samples_ddim = model.decode_first_stage(samples_cfg)
             result = torch.clamp((x_samples_ddim + 1.0) / 2.0, min = 0.0, max = 1.0).cpu().numpy().transpose(0, 2, 3, 1) * 255
     image = [PIL.Image.fromarray(img.astype(numpy.uint8)) for img in result][0]
@@ -318,11 +336,17 @@ def Stable_diffusion_upscaler(binary_data, prompt, opt):
     model = load_model_from_config(config, checkpoint_path + opt["ckpt"], opt["verbose"])
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
-    sampler = DDIMSampler(model)
+    if opt["sampler"] == "plms_sampler":
+        sampler = PLMSSampler(model)
+    elif opt["sampler"] == "p_sampler":
+        sampler = DPMSolverSampler(model)
+        opt["steps"] += 1
+    else:
+        sampler = DDIMSampler(model)
     sampler.make_schedule(ddim_num_steps = opt['ddim_steps'], ddim_eta = opt['ddim_eta'], verbose = opt["verbose"])
     if isinstance(sampler.model, LatentUpscaleDiffusion):
         noise_level = torch.Tensor([opt["noise_augmentation"]]).to(sampler.model.device).long()
-    sampler.make_schedule(opt["ddim_steps"], ddim_eta = opt["ddim_eta"], verbose = opt["verbose"])
+    sampler.make_schedule(opt["steps"], ddim_eta = opt["ddim_eta"], verbose = opt["verbose"])
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = sampler.model
     seed_everything(opt["seed"])
@@ -363,7 +387,7 @@ def Stable_diffusion_upscaler(binary_data, prompt, opt):
         else:
             raise NotImplementedError()
         shape = [model.channels, h, w]
-        samples = sampler.sample(opt["ddim_steps"], 1, shape, cond, verbose = opt["verbose"], eta = opt["ddim_eta"], unconditional_guidance_scale = opt["scale"], unconditional_conditioning = uc_full, x_T = start_code, )[0]
+        samples = sampler.sample(opt["steps"], 1, shape, cond, verbose = opt["verbose"], eta = opt["ddim_eta"], unconditional_guidance_scale = opt["guidance_scale"], unconditional_conditioning = uc_full, x_T = start_code, )[0]
     with torch.no_grad():
         x_samples_ddim = model.decode_first_stage(samples)
     result = torch.clamp((x_samples_ddim + 1.0) / 2.0, min = 0.0, max = 1.0)
@@ -458,7 +482,7 @@ class StableDiffusionLatentUpscalePipeline(DiffusionPipeline):
         batch_size = 1 if isinstance(prompt, str) else len(prompt)
         device = self._execution_device
         # Здесь "guidance_scale" определяется аналогично весу наведения "w" в уравнении (2) соответствует отсутствию свободного наведения классификатора
-        guidance_scale = opt["scale"]
+        guidance_scale = opt["guidance_scale"]
         do_classifier_free_guidance = guidance_scale > 1.0
         if guidance_scale == 0:
             prompt = [""] * batch_size
@@ -472,7 +496,7 @@ class StableDiffusionLatentUpscalePipeline(DiffusionPipeline):
             # Кодировать изображение, если оно еще не находится в латентном пространстве
             image = self.vae.encode(image).latent_dist.sample() * self.vae.config.scaling_factor
         # 4. Установка временных шагов
-        num_inference_steps = opt["ddim_steps"]
+        num_inference_steps = opt["steps"]
         self.scheduler.set_timesteps(num_inference_steps, device=device)
         timesteps = self.scheduler.timesteps
         batch_multiplier = 2 if do_classifier_free_guidance else 1
