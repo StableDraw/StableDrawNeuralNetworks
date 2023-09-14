@@ -1,3 +1,0 @@
-propan[async-rabbit]==0.1.5.23
-python-dotenv
-pydantic-settings>=2.0a1
