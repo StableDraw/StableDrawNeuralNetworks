@@ -36,7 +36,7 @@ async def base_handler(body, logger: Logger):
     response = run_neurals(msg)
     response = gen_responce(
         body_json, response, "StableDraw.Contracts.NeuralContracts.Replies:INeuralReply")
-    await broker.publish(json.dumps(response), queue="saga-state", exchange=exchOutput)
+    await broker.publish(json.dumps(response), exchange=exchOutput)
 
 
 @app.on_startup
