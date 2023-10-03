@@ -11,7 +11,6 @@ from propan.annotations import RabbitBroker as Broker, ContextRepo
 from apps.message_runner import gen_responce, run_neurals
 
 from config import init_settings
-# from apps import router
 
 router = RabbitRouter()
 broker = RabbitBroker()
@@ -32,8 +31,9 @@ async def base_handler(body, logger: Logger):
 
     body_json = json.loads(body.decode('utf8'))    
     msg = body_json['message']    
-    
+    print(msg['parameters'])
     response = run_neurals(msg)
+    print(response)
     response = gen_responce(
         body_json, response, "StableDraw.Contracts.NeuralContracts.Replies:INeuralReply")    
     await broker.publish(response.encode('utf-8'), queue="neural-state", exchange=exchOutput)            

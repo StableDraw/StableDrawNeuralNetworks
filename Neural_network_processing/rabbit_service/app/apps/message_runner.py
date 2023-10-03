@@ -36,11 +36,18 @@ def run_neurals(msg):
     neural_type = msg['neuralType']
     try:
         if neural_type == 'colorizer' or neural_type == 'delete_background':
+            print(msg['parameters'])             
+            params = json.loads(msg['parameters'])
+            print(params)
+            print(type(params))
             result = INeuralProxy.colorizer(
-                init_img_binary_data=msg['imagesInput'][0], params=json.loads(msg['params']))
-            if result is bytes:
-                msg_response = gen_message(
-                    msg['orderId'], neural_type, images=[result])
+                init_img_binary_data=msg['imagesInput'][0], params=params)
+            print(type(result))
+            print(type(params))
+            # if result is str:
+            print("eeesssseses")
+            msg_response = gen_message(
+                msg['orderId'], neural_type, images=[result])
         elif neural_type == 'upscaler':
             if msg['caption']:
                 result = INeuralProxy.upscaler(
