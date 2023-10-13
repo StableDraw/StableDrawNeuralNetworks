@@ -343,6 +343,7 @@ torch.backends.cudnn.benchmark = True
 def get_transformed_image(binary_data, filtr, params):
     torch.cuda.empty_cache()
     orig_image = PIL.Image.open(io.BytesIO(binary_data)).convert("RGB")
+    
     result = orig_image
     if params["clr_saturate_every_step"] == True:
         if params["compare"] == True:

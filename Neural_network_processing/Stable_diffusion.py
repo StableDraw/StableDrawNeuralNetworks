@@ -343,7 +343,7 @@ def Stable_diffusion_upscaler(binary_data, prompt, opt):
         opt["steps"] += 1
     else:
         sampler = DDIMSampler(model)
-    sampler.make_schedule(ddim_num_steps = opt['ddim_steps'], ddim_eta = opt['ddim_eta'], verbose = opt["verbose"])
+    sampler.make_schedule(ddim_num_steps = opt['steps'], ddim_eta = opt['ddim_eta'], verbose = opt["verbose"])
     if isinstance(sampler.model, LatentUpscaleDiffusion):
         noise_level = torch.Tensor([opt["noise_augmentation"]]).to(sampler.model.device).long()
     sampler.make_schedule(opt["steps"], ddim_eta = opt["ddim_eta"], verbose = opt["verbose"])

@@ -3,7 +3,7 @@ from deep_translator import single_detection
 
 class Translator:
     def __init__(self):
-        with open("detect_language_key.txt", "r") as f:
+        with open("C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\detect_language_key.txt", "r") as f:
             self.api_key = f.read()
 
     def detect_language(self, text):
@@ -21,7 +21,7 @@ class Translator:
         while True:
             try:
                 r = translators.translate_text(txt, translator = "google", from_language = f, to_language = t)
-                return r
+                return (source_lang, r)
             except:
                 print("Error again...")
-        return (source_lang, r)
+        

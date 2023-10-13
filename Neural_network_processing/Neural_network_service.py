@@ -1,30 +1,26 @@
-from typing import Optional, List
+﻿import io
+from PIL import Image
+from huggingface_hub import cached_assets_path
+from INeural import colorizer
+from INeural import delete_background
+from INeural import upscaler
+from INeural import image_to_image
+from INeural import text_to_image
+from INeural import image_captioning
+from INeural import image_classification
+from INeural import translation
+from INeural import inpainting
+from INeural import stylization
+from INeural import image_fusion
 
-from Image_classifier import Get_image_class
-from Translate import Translator
-from Image_сolorization import Image_сolorizer
-from Image_caption_generator import Gen_caption
-from Delete_background import Delete_background
-from RealESRGAN import RealESRGAN_upscaler
-from Stable_diffusion import Stable_diffusion_upscaler
-from Stable_diffusion import Stable_diffusion_upscaler_xX
-from Stable_diffusionXL import Stable_diffusion_XL_image_to_image
-from Kandinsky_2 import Kandinsky2_text_to_image
-from Stable_diffusion import Stable_diffusion_text_to_image as Stable_diffusion_2_0_text_to_image
-from Stable_diffusionXL import Stable_diffusion_XL_text_to_image
-from Stable_diffusion import Stable_diffusion_image_to_image as Stable_diffusion_2_0_image_to_image
-from Stable_diffusion import Stable_diffusion_depth_to_image as Stable_diffusion_2_0_depth_to_image
-from Kandinsky_2 import Kandinsky2_image_to_image
-from Stable_diffusion import Stable_diffusion_inpainting
-from Kandinsky_2 import Kandinsky2_inpainting
-from Kandinsky_2 import Kandinsky2_stylization
-from Kandinsky_2 import Kandinsky2_mix_images
-
-
-#Колоризатор (4 модели с одинаковыми параметрами) (будет заменён в скором будущем)
-#Принимает изображение и параметры. Возвращает изображение
-def colorizer(init_img_binary_data: bytes, params: dict) -> bytes:
-    '''
+if __name__ == "__main__":
+    
+    caption = "vector logo of drone on brain background"
+    with open("test_input\\img.png", "rb") as f:
+        init_img_binary_data = f.read()
+    with open("test_input\\img2.png", "rb") as f:
+        mask_binary_data = f.read()
+        
     params = {
         "ckpt": "ColorizeArtistic_gen",    #Выбор модели ("ColorizeArtistic_gen", "ColorizeArtistic_gen_GrayScale", "ColorizeArtistic_gen_Sketch", "ColorizeArtistic_gen_Sketch2Gray")
         "steps": 1,                        #Количество шагов обработки (минимум 1)
@@ -37,14 +33,10 @@ def colorizer(init_img_binary_data: bytes, params: dict) -> bytes:
         "clr_saturate_every_step": True    #Повышать цветовую насыщенность после каждого шага (играет роль только если количество шагов обработки больше 1)
         #max_dim не учитывается, поскольку в колоризатор встроен внутренний даунсемплер
     }
-    '''
-    binary_data = Image_сolorizer(init_img_binary_data, params)
-    return binary_data
+    
+    binary_data = colorizer(init_img_binary_data, params)
+    
 
-#Удаление фона (2 модели с разными параметрами в зависимости от модели, читайте комментарии)
-#Принимает изображение и параметры. Возвращает изображение
-def delete_background(init_img_binary_data: bytes, params: dict) -> bytes:
-    '''
     params = {
         "model": "DIS", #Доступно "U2NET" или "DIS"
         "RescaleT": 320, #Только для модели U2NET
@@ -58,15 +50,10 @@ def delete_background(init_img_binary_data: bytes, params: dict) -> bytes:
         "crop_size": [1024, 1024]   # Размер случайно обрезки из ввода, обычно он меньше, чем params["cache_size"], например, [920, 920] для увеличения данных
     #max_dim, возможно, даунсемплится по "*_size" параметрам выше. Не исследованно, и зависит от модели. По умолчанию, ограничений нет
     }
-    '''
-    binary_data = Delete_background(init_img_binary_data, params)
-    return binary_data
+    
+    binary_data = delete_background(init_img_binary_data, params)
+    
 
-#Апскейлер (3 группы моделей с разными параметрами, в зависимости от модели или группы моделей, внимательно читайте комментарии)
-#Принимает изображение, описание (для RealESR моделей описание не нужно, но нужно для SD, то есть оставшихся) и параметры. Возвращает изображение
-def upscaler(init_img_binary_data: bytes, caption: Optional[str], params: dict) -> bytes:
-    '''
-    #Апскейлер (3 разных апскейлера с разными параметрами в зависимости от модели, читайте комментарии)
     params = {
         "model": "StableDiffusionx4Upscaler",   #("StableDiffusionx4Upscaler", "StableDiffusionxLatentx2Upscaler", "RealESRGAN_x4plus" - модель x4 RRDBNet, "RealESRNet_x4plus" - модель x4 RRDBNet, "RealESRGAN_x4plus_anime_6B" - модель x4 RRDBNet с 6 блоками, "RealESRGAN_x2plus" - модель x2 RRDBNet, "realesr-animevideov3" - модель x4 VGG-стиля (размера XS), "realesr-general-x4v3" - модель x4 VGG-стиля (размера S))
         "steps": 50,                            #Шаги DDIM, от 2 до 250
@@ -90,21 +77,10 @@ def upscaler(init_img_binary_data: bytes, caption: Optional[str], params: dict) 
         "alpha_upsampler": "realesrgan",        #Апсемплер для альфа-каналов. Варианты: realesrgan | bicubic
         "gpu-id": None                          #Устройство gpu для использования (по умолчанию = None) может быть 0, 1, 2 для обработки на нескольких GPU
     }
-    '''
-    if params["model"] == "StableDiffusionx4Upscaler":
-        binary_data = Stable_diffusion_upscaler(init_img_binary_data, caption, params)
-    elif params["model"] == "StableDiffusionx2Upscaler":
-        binary_data = Stable_diffusion_upscaler_xX(init_img_binary_data, caption, params)
-    elif "REALESR" in params["model"].upper():
-        binary_data = RealESRGAN_upscaler(init_img_binary_data, params) #передаю путь к рабочей папке
-    else:
-        raise ValueError("Доступны только \"StableDiffusionx4Upscaler\" и \"StableDiffusionx4Upscaler\"")
-    return binary_data
+    
+    binary_data = upscaler(init_img_binary_data, caption, params)
 
-#Генерация по тексту и изображению (Image to image) (4 разные нейронки, у них разные параметры, в комментариях всё указано, требуется максимум внимания)
-#Принимает изображение, описание и параметры. Возвращает список изображений
-def image_to_image(init_img_binary_data: bytes, caption: str, params: dict) -> List[bytes]:
-    '''
+
     params = {
         #Параметры не для пользователя:
         "add_watermark": False, #Добавлять невидимую вотермарку
@@ -163,22 +139,10 @@ def image_to_image(init_img_binary_data: bytes, caption: str, params: dict) -> L
         "steps": 40, #Количество шагов обработки (от 0 до 1000)
         "prior_steps": 25 #Только для Kandinsky > 2.0
     }
-    '''
-    if params["version"] == "SD-2.0":
-        if params["Depth"] == True:
-            binary_data_list = [Stable_diffusion_2_0_depth_to_image(init_img_binary_data, caption, params)]
-        else:
-            binary_data_list = [Stable_diffusion_2_0_image_to_image(init_img_binary_data, caption, params)]
-    elif "Kandinsky" in params["version"]:
-        binary_data_list = Kandinsky2_image_to_image(init_img_binary_data, caption, params)
-    else:
-        binary_data_list = Stable_diffusion_XL_image_to_image(init_img_binary_data, caption, params)
-    return binary_data_list
+    
+    binary_data = image_to_image(init_img_binary_data, caption, params)[0]
+    
 
-#Генерация по тексту (Text to image) (4 разные нейронки, у них разные параметры, в комментариях всё указано, требуется максимум внимания)
-#Принимает описание и параметры. Возвращает список изображений
-def text_to_image(caption: str, params: dict) -> List[bytes]:
-    '''
     params = {
         #Параметры не для пользователя:
         "add_watermark": False, #Добавлять невидимую вотермарку
@@ -231,19 +195,10 @@ def text_to_image(caption: str, params: dict) -> List[bytes]:
         "steps": 40, #Количество шагов обработки (от 0 до 1000)
         "prior_steps": 25, #Только для Kandinsky > 2.0
     }
-    '''
-    if params["version"] == "SD-2.0":
-        binary_data_list = [Stable_diffusion_2_0_text_to_image(caption, params)]
-    elif "Kandinsky" in params["version"]:
-        binary_data_list = Kandinsky2_text_to_image(caption, params)
-    else:
-        binary_data_list = Stable_diffusion_XL_text_to_image(caption, params)
-    return binary_data_list
 
-#Генерация описания для изображения (Image captioning) (1 нейронка, параметры только для неё. Но скоро будет заменена другой нейронкой)
-#Принимает изображение и параметры. Возвращает строку описания
-def image_captioning(init_img_binary_data: bytes, params: dict) -> str:
-    '''
+    binary_data = text_to_image(caption, params)[0]
+    
+
     params = {
         "ckpt": "caption_base_best.pt", #используемые чекпоинты (caption_huge_best.pt или caption_base_best.pt)
         "eval_cider": True,             #оценка с помощью баллов CIDEr
@@ -265,46 +220,34 @@ def image_captioning(init_img_binary_data: bytes, params: dict) -> str:
         "sampling_topk": 3,             #из скольки тоненов отбирать лучший (0 - не использовать сэмплирование)
         "seed": 42                      #инициализирующее значение для генерации
     }#max_dim не обнаружено. Возможно даунсемплит где-то внутри
-    '''
-    caption = Gen_caption(init_img_binary_data, params)
-    return caption
 
-#Определение категории изображения (Classification) (Техническая нейронка, необходимая только для внутреннего использования. 1 модель без входных параметров)
-#Принимает изображение. Возвращает список из двух цифр: 1 - номер класса, 2 - номер подкласса
-#Виды классов (по индексам): 
-'''
-classes = [
-    "фото с лицом",
-    "фото без лица",
-    "профессиональный рисунок",
-    "непрофессиональный рисунок",
-    "профессиональный лайн",
-    "быстрый лайн"
-]
-'''
-#Виды подклассов (по индексам): 
-'''
-subclasses = [
-    "в цвете",
-    "чб"
-]
-'''
-def image_classification(init_img_binary_data: bytes) -> List[int]:
-    class_name = Get_image_class(init_img_binary_data)
-    return class_name
+    nn_caption = image_captioning(init_img_binary_data, params)
+    print(nn_caption)
 
-#Перевод текста (Translate) (это даже не нейронка, параметров не принимает, просто переводит текст, пока по API, потом будет заменена нейронкой. Нужна исключительно для технических целей. но можно в будущем дать доступ к переводчику пользователям, при желании, в отдельной менюшке)
-#Вначале нужно вызвать инициализатор:
-translator = Translator()
-#Принимает строку текста для перевода, опционально: (строку ключа языка, с которого осуществляется перевод, скажем "en", если не передавать, то определит язык источника автоматически. Если он будет совпадать с языком назвачения - вернёт строку буз перевода) и (строку ключа языка, на который осуществляется перевод, скажем "en", если не указывать, по умолчанию переводит на английский). Возвращает кортеж из строки ключа языка источника (по нему можно определить, был ли произведён перевод, или он равен ключу языка назвачения, и с какого языка перевод осуществлялся, если язык источника не был указан) и строки переведённого текста
-def translation(input_text: str, source_lang: str = "", dest_lang: str = "en") -> tuple:
-    final_source_lang, translated_text = translator.translate(input_text, source_lang, dest_lang)
-    return (final_source_lang, translated_text)
 
-#Перерисовка области изображения (Inpainting) (2 модели, нужно внимательно читать комментарии к параметра, чтобы понять что к чему относится)
-#Принимает на вход исходное изображение, изображение маски (где содержимое маски может иметь любой цвет, но значение альфаканала равно 255, а область вне маски является прозрачное, то есть альфаканал в этих местах равен 0), строку описания и словарь параметров. Возвращает список изображений
-def inpainting(init_img_binary_data: bytes, mask_binary_data: bytes, caption: str, params: dict) -> List[bytes]:
-    '''
+    classes = [
+        "фото с лицом",
+        "фото без лица",
+        "профессиональный рисунок",
+        "непрофессиональный рисунок",
+        "профессиональный лайн",
+        "быстрый лайн"
+    ]
+
+    #Виды подклассов (по индексам): 
+    subclasses = [
+        "в цвете",
+        "чб"
+    ]
+    
+    clss = image_classification(init_img_binary_data)
+    print(subclasses[clss[1]] + " " + classes[clss[0]])
+
+
+    nn_caption = translation(input_text = caption, source_lang = "en", dest_lang = "ru")
+    print(nn_caption)
+    
+
     params = {
         "version": "Kandinsky2.2",                  #"SD-2.0", "Kandinsky2.0", "Kandinsky2.1", "Kandinsky2.2"
         "progress": True,                           #Только для Kandinsky < 2.2 и обработчика "p_sampler"
@@ -326,17 +269,10 @@ def inpainting(init_img_binary_data: bytes, mask_binary_data: bytes, caption: st
         "verbose": False,                           #понятия не имею что это
         "max_dim": pow(2048, 2)                     #я не могу генерировать на своей видюхе картинки больше 2048 на 2048
     }
-    '''
-    if params["version"] == "SD-2.0":
-        binary_data_list = [Stable_diffusion_inpainting(init_img_binary_data, mask_binary_data, caption, params)] #передаю сокет, путь к рабочей папке, имя файла и параметры
-    else:
-        binary_data_list = Kandinsky2_inpainting(init_img_binary_data, mask_binary_data, caption, params)
-    return binary_data_list
+    
+    binary_data = inpainting(init_img_binary_data, mask_binary_data, caption, params)[0]
 
-#Стилизация (Style transfer) (1 модель пока что, скоро будет вторая)
-#Принимает на вход изображение контента, изображение стиля, строку описания и словарь параметров. Возвращает список изображений
-def stylization(content_binary_data: bytes, style_binary_data: bytes, caption: str, params: dict) -> List[bytes]:
-    '''
+
     params = {
         "low_vram_mode": False, #Режим для работы на малом количестве видеопамяти
         "num_cols": 1, 
@@ -351,14 +287,12 @@ def stylization(content_binary_data: bytes, style_binary_data: bytes, caption: s
         "style_weight": 0.4, #Вес стиля (в сумме, как я понял, все 3 веса должны равняться 1)
         "negative_prior_prompt": ""
     }
-    '''
-    binary_data_list = Kandinsky2_stylization(content_binary_data, style_binary_data, caption, params)
-    return binary_data_list
+    content_binary_data = init_img_binary_data
+    style_binary_data = mask_binary_data
+    
+    binary_data = stylization(content_binary_data, style_binary_data, caption, params)[0]
 
-#Совмещение изображений (Image fusion) (1 модель, но у неё 2 версии, внимательно читайте комментарии к параметрам, они могу относиться к разным версиям)
-#Принимает первое и второе изображения для совмещения, описание первого и второго изображения для совмещения и словарь параметров. Возвращает список изображений
-def image_fusion(img1_binary_data: bytes, img2_binary_data: bytes, caption1: str, caption2: str, params: dict) -> List[bytes]:
-    '''
+
     params = {
         "version": "Kandinsky2.2", #("Kandinsky2.1", "Kandinsky2.2")
         "low_vram_mode": False, #Режим для работы на малом количестве видеопамяти
@@ -381,6 +315,14 @@ def image_fusion(img1_binary_data: bytes, img2_binary_data: bytes, caption1: str
         "negative_prior_prompt": "lowres, text, error, cropped, worst quality, low quality, jpeg artifacts, ugly, duplicate, morbid, mutilated, out of frame, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck, username, watermark, signature", #Только для Kandinsky > 2.0
         "negative_prompt": ""
     }
-    '''
-    binary_data_list = Kandinsky2_mix_images(img1_binary_data, img2_binary_data, caption1, caption2, params)
-    return binary_data_list
+    img1_binary_data = init_img_binary_data
+    img2_binary_data = mask_binary_data
+    caption1 = caption
+    caption2 = "colorful logo of snake"
+
+    binary_data = image_fusion(img1_binary_data, img2_binary_data, caption1, caption2, params)[0]
+
+
+    output_image = Image.open(io.BytesIO(binary_data)).convert("RGBA")
+    output_image.show()
+    output_image.save("test_output\\img.png")

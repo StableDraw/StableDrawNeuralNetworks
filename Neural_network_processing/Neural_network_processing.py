@@ -597,10 +597,10 @@ async def neural_processing(process, nprocess):
                 else:
                     params = {
                         "add_watermark": False, #Добавлять невидимую вотермарку
-                        "version": "SDXL-base-1.0", #Выбор версии: "SDXL-base-1.0", "SDXL-base-0.9" (недоступна для коммерческого использования), "SD-2.0", "SD-2.1", "SD-2.1-768", "SDXL-refiner-0.9" (недоступна для коммерческого использования, используется как модель 2 стадии, для первой непригодна),  "SDXL-refiner-1.0" (используется как модель 2 стадии, для первой непригодна), "Kandinsky2.0", "Kandinsky2.1", "Kandinsky2.2"
-                        "ControlNET": False, #Только для "Kandinsky2.2"
+                        "version": "Kandinsky2.2", #Выбор версии: "SDXL-base-1.0", "SDXL-base-0.9" (недоступна для коммерческого использования), "SD-2.0", "SD-2.1", "SD-2.1-768", "SDXL-refiner-0.9" (недоступна для коммерческого использования, используется как модель 2 стадии, для первой непригодна),  "SDXL-refiner-1.0" (используется как модель 2 стадии, для первой непригодна), "Kandinsky2.0", "Kandinsky2.1", "Kandinsky2.2"
+                        "ControlNET": True, #Только для "Kandinsky2.2"
                         "progress": True, #Только для Kandinsky < 2.2 и обработчика "p_sampler"
-                        "Depth": True, #Использовать дополнительный слой глубины (только для версий "Kandinsky2.2" ControlNET и версий "SD-2.0")
+                        "Depth": False, #Использовать дополнительный слой глубины (только для версий "Kandinsky2.2" ControlNET и версий "SD-2.0")
                         "use_custom_ckpt": False, #Использовать свои веса для выбранной версии модели (для всех версий кроме SD-2.0)
                         "custom_ckpt_name": "512-depth-ema.safetensors", #Имя кастомной модели, если выбран "use_custom_ckpt". Является обязательным параметром для версии SD-2.0. (SD-2.0: "512-depth-ema.safetensors" для Depth == True, и "sd-v1-1.safetensors", "sd-v1-1-full-ema.safetensors", "sd-v1-2.safetensors", "sd-v1-2-full-ema.safetensors", "sd-v1-3.safetensors", "sd-v1-3-full-ema.safetensors", "sd-v1-4.safetensors", "sd-v1-4-full-ema.safetensors", "sd-v1-5.safetensors", "sd-v1-5-full-ema.safetensors" для Depth == False)
                         "low_vram_mode": False, #Режим для работы на малом количестве видеопамяти
@@ -652,16 +652,17 @@ async def neural_processing(process, nprocess):
                         "max_dim": pow(2048, 2) # я не могу генерировать на своей видюхе картинки больше 2048 на 2048
                     }
                     if "Kandinsky" in params["version"]:
-                        binary_data = Kandinsky2_image_to_image(init_img_binary_data, caption, params)
+                        binary_data = Kandinsky2_image_to_image(init_img_binary_data, caption, params)[0]
                     elif params["version"] == "SD-2.0":
-                        binary_data = Stable_diffusion_2_0_image_to_image(init_img_binary_data, caption, params)
+                        binary_data = Stable_diffusion_2_0_image_to_image(init_img_binary_data, caption, params)[0]
                     else:
                         if Is_depth == True:
+                            params["Depth"] = True
                             params["custom_ckpt_name"] = "512-depth-ema.safetensors"
                             params["version"] = "SD-2.0"
                             params["w"] = 512
                             params["h"] = 512
-                            binary_data = Stable_diffusion_2_0_depth_to_image(init_img_binary_data, caption, params)
+                            binary_data = Stable_diffusion_2_0_depth_to_image(init_img_binary_data, caption, params)[0]
                         else:
                             binary_data = Stable_diffusion_XL_image_to_image(init_img_binary_data, caption, params)[0]
                 result_img = final_file_name + "_" + str(img_suf)
@@ -735,9 +736,9 @@ async def neural_processing(process, nprocess):
 
             elif task_type == 'a': #если нужно апскейлить изображение
                 params = {
-                    "model": "RealESRGAN_x4plus",       #Модель для обработки ("RealESRGAN_x4plus" - модель x4 RRDBNet, "RealESRNet_x4plus" - модель x4 RRDBNet, "RealESRGAN_x4plus_anime_6B" - модель x4 RRDBNet с 6 блоками, "RealESRGAN_x2plus" - модель x2 RRDBNet, "realesr-animevideov3" - модель x4 VGG-стиля (размера XS), "realesr-general-x4v3" - модель x4 VGG-стиля (размера S)) 
+                    "model": "RealESRGAN_x2plus",       #Модель для обработки ("RealESRGAN_x4plus" - модель x4 RRDBNet, "RealESRNet_x4plus" - модель x4 RRDBNet, "RealESRGAN_x4plus_anime_6B" - модель x4 RRDBNet с 6 блоками, "RealESRGAN_x2plus" - модель x2 RRDBNet, "realesr-animevideov3" - модель x4 VGG-стиля (размера XS), "realesr-general-x4v3" - модель x4 VGG-стиля (размера S)) 
                     "denoise_strength": 0.5,            #Сила удаления шума. 0 для слабого удаления шума (шум сохраняется), 1 для сильного удаления шума. Используется только для модели "realesr-general-x4v3"
-                    "outscale": 4,                      #Величина того, во сколько раз увеличть разшрешение изображения (модель "RealESRGAN_x2plus" x2, остальные x4)
+                    "outscale": 2,                      #Величина того, во сколько раз увеличть разшрешение изображения (модель "RealESRGAN_x2plus" x2, остальные x4)
                     "tile": 0,                          #Размер плитки, 0 для отсутствия плитки во время тестирования
                     "tile_pad": 10,                     #Заполнение плитки
                     "pre_pad": 0,                       #Предварительный размер заполнения на каждой границе
@@ -785,7 +786,7 @@ async def neural_processing(process, nprocess):
                 caption = task[2]
                 params = {
                     "add_watermark": False, #Добавлять невидимую вотермарку
-                    "version": "SDXL-base-1.0", # Выбор модели: "SDXL-base-1.0", "SDXL-base-0.9", "Kandinsky2.0", "Kandinsky2.1", "Kandinsky2.2", (недоступна для коммерческого использования), "SD-2.0", "SD-2.1", "SD-2.1-768", "SDXL-refiner-0.9" (недоступна для коммерческого использования, используется как модель 2 стадии, для первой непригодна), "SDXL-refiner-1.0" (используется как модель 2 стадии, для первой непригодна)
+                    "version": "Kandinsky2.2", # Выбор модели: "SDXL-base-1.0", "SDXL-base-0.9", "Kandinsky2.0", "Kandinsky2.1", "Kandinsky2.2", (недоступна для коммерческого использования), "SD-2.0", "SD-2.1", "SD-2.1-768", "SDXL-refiner-0.9" (недоступна для коммерческого использования, используется как модель 2 стадии, для первой непригодна), "SDXL-refiner-1.0" (используется как модель 2 стадии, для первой непригодна)
                     "ControlNET": False, #Только для "Kandinsky2.2"
                     "use_flash_attention": False, #Только для "Kandinsky"
                     "progress": True, #Только для Kandinsky < 2.2 и обработчика "p_sampler"
@@ -860,7 +861,10 @@ async def neural_processing(process, nprocess):
             if task_type == 'o': #если нужно покрасить изображение
                 if postview == None:
                     postview = str(base64.b64encode(init_img_binary_data).decode("utf-8"))
-                w, h, binary_data = colorize(init_img_binary_data, image_class)
+                binary_data = colorize(init_img_binary_data, image_class)
+                image = PIL.Image.open(io.BytesIO(binary_data)).convert("RGB")
+                w, h = image.size
+                image.close()
                 result_img = final_file_name + "_" + str(img_suf)
                 with open(path_to_task_dir + "\\" + result_img + ".png", "wb") as f:
                     f.write(binary_data)
@@ -1086,18 +1090,18 @@ async def pre_processing(websocket, dictData_list):
                         message_id = dictData["chain_id"]
                     img_name = dictData["img_name"]
                     img_suf = int(dictData["img_suf"])
+                lang, result_text = translator.translate(dictData["prompt"])
+                if lang != "en":
+                    with open(task_dir + "\\Human_caption_ru_" + str(img_suf) + ".txt", "w") as f:
+                        f.write(dictData["prompt"])
+                    time.sleep(0.3)
+                    message_id = send_message_to_tg(URL + "sendMessage?text=" + result_text + "&reply_to_message_id=" + task_id + "&chat_id=" + chat_id)
+                else:
+                    message_id = task_id
                 if need_make_text_file:
-                    lang, result_text = translator.translate(dictData["prompt"])
-                    if lang != "en":
-                        with open(task_dir + "\\Human_caption_ru_" + str(img_suf) + ".txt", "w") as f:
-                            f.write(dictData["prompt"])
-                        time.sleep(0.3)
-                        message_id = send_message_to_tg(URL + "sendMessage?text=" + result_text + "&reply_to_message_id=" + task_id + "&chat_id=" + chat_id)
-                    else:
-                        message_id = task_id
                     with open(task_dir + "\\Human_caption_" + str(img_suf) + ".txt", "w") as f:
                         f.write(result_text)
-                    caption = result_text
+                caption = result_text
             if Is_inpainting == True:
                 mask = make_mask(pillow_img, task_dir + "\\mask_" + str(img_suf) + ".png")
                 message_id = send_document_to_tg(URL + "sendDocument?&reply_to_message_id=" + message_id + "caption=C маской&chat_id=" + chat_id, {"document": ("mask_" + str(img_suf) + ".png", mask)})
@@ -1232,7 +1236,6 @@ async def handler(websocket): #здесь нужно формировать сп
         task_list.pop(next(i for i, (x, _) in enumerate(task_list) if x == websocket))
 
 pre_process = False
-
 if __name__ == "__main__":
     #translators.preaccelerate()
     load_dotenv()

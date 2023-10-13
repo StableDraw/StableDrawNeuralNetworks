@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  rabbit:
+    image: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 3s
+      timeout: 30s
+      retries: 3
+    ports:
+      - 5672:5672
+
+  app:
+    build: .
+    environment:
+      APP_BROKER__URL: amqp://guest:guest@rabbit:5672/
+    volumes:
+      - ./app:/home/user/app:ro
+    depends_on:
+      rabbit:
+        condition: service_healthy

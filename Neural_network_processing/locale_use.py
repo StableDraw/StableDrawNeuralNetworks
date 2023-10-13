@@ -1,33 +1,38 @@
-from Stable_diffusion import Stable_diffusion_inpainting
+from RealESRGAN import RealESRGAN_upscaler
 import os
-import time
+import io
+from PIL import Image
+from tqdm import tqdm
 
 if __name__ == '__main__':
-    params = {
-        "ddim_steps": 50,           #Шаги DDIM, от 0 до 50
-        "ddim_eta": 0.0,            #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
-        "scale": 10.0,              #от 0.1 до 30.0
-        "strength": 0.9,            #сила увеличения/уменьшения шума. 1.0 соответствует полному уничтожению информации в инициализирующем образе
-        "ckpt": 0,                  #выбор весов модели (0)
-        "seed": 42,                 #от 0 до 1000000
-        "verbose": False,
-        "max_dim": pow(4096, 2)  # я не могу генерировать на своей видюхе картинки больше 512 на 512
-    }
+    
+    it = 10
+    start = 0
 
-    start = time.time()
-    path = "C:\\Users\\Robolightning\\Desktop\\Учёба\\Восьмой семестр\\Курсовой проект 3\\Изображения\\2048\\"
-    filename = "anime.png"
-    if ".png" in filename:
-        print(filename)
-        caption = filename[:-4]
-        with open(path + filename, "rb") as f:
-            init_img_binary_data = f.read()
-        with open(path + "mask.png", "rb") as f:
-            mask_binary_data = f.read()
-        binary_data = Stable_diffusion_inpainting(init_img_binary_data, mask_binary_data, caption, params)
-        with open("C:\\Users\\Robolightning\\Desktop\\lam\\3\\" + filename, "wb") as f:
-            f.write(binary_data)
-    end = time.time() - start ## собственно время работы программы
-    print("End\n" + str(end))
-    with open("C:\\Users\\Robolightning\\Desktop\\lam\\3\\" + "time.txt", "w") as f:
-        f.write(str(end)) ## вывод времени
+    tp = "C:\\repos\\Real-ESRGAN\\experiments\\debug_train_RealESRGANx2plus_400k_B12G4_pairdata\\visualization\\"
+    for j in tqdm(range(start, it + 1, 5)):
+        params = {
+            "model": "RealESRGAN_x2plus",       #Модель для обработки ("RealESRGAN_x4plus" - модель x4 RRDBNet, "RealESRNet_x4plus" - модель x4 RRDBNet, "RealESRGAN_x4plus_anime_6B" - модель x4 RRDBNet с 6 блоками, "RealESRGAN_x2plus" - модель x2 RRDBNet, "realesr-animevideov3" - модель x4 VGG-стиля (размера XS), "realesr-general-x4v3" - модель x4 VGG-стиля (размера S)) 
+            "denoise_strength": 0.5,            #Сила удаления шума. 0 для слабого удаления шума (шум сохраняется), 1 для сильного удаления шума. Используется только для модели "realesr-general-x4v3"
+            "outscale": 2,                      #Величина того, во сколько раз увеличть разшрешение изображения (модель "RealESRGAN_x2plus" x2, остальные x4)
+            "tile": 0,                          #Размер плитки, 0 для отсутствия плитки во время тестирования
+            "tile_pad": 10,                     #Заполнение плитки
+            "pre_pad": 0,                       #Предварительный размер заполнения на каждой границе
+            "face_enhance": False,              #Использовать GFPGAN улучшения лиц
+            "fp32": True,                       #Использовать точность fp32 во время вывода. По умолчанию fp16 (половинная точность)
+            "alpha_upsampler": "realesrgan",    #Апсемплер для альфа-каналов. Варианты: realesrgan | bicubic
+            "gpu-id": None,                      #Устройство gpu для использования (по умолчанию = None) может быть 0, 1, 2 для обработки на нескольких GPU
+            #на данный момент "max_dim": pow(1024, 2) ((для всех моделей, кроме "RealESRGAN_x2plus") и "outscale": 4), и pow(2048, 2) (для модели "RealESRGAN_x2plus" и "outscale": 2)
+            "temp_param": str(j)
+        }
+
+        dp = tp + str(j) + "k"
+        if not os.path.exists(dp):
+            os.mkdir(dp)
+        for root, _, files in os.walk(tp + "test\\"):  
+            for filename in files:
+                with open(tp + "test\\" + filename, "rb") as f:
+                    init_img_binary_data = f.read()
+                binary_data = RealESRGAN_upscaler(init_img_binary_data, params)
+                Image.open(io.BytesIO(init_img_binary_data)).convert("RGBA").resize((4096, 4096), 4).save(dp + "\\" + filename[:-4] + " small.png")
+                Image.open(io.BytesIO(binary_data)).convert("RGBA").resize((4096, 4096), 4).save(dp + "\\" + filename[:-4] + " big.png")
