@@ -4,7 +4,8 @@ import array
 from typing import List
 import json
 
-from apps import INeuralProxy
+# from apps import INeuralProxy
+from ....INeural import INeural as INeuralProxy
 
 
 def gen_message(orderId, neuralType, textResult=None, images=None, errorMsg=None):
