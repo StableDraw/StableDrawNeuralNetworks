@@ -30,8 +30,9 @@ exchOutput = RabbitExchange(
 async def base_handler(body, logger: Logger):
 
     body_json = json.loads(body.decode('utf8'))    
-    msg = body_json['message']    
-    # print(msg)
+    msg = body_json['message']
+    print("sss")
+    print(msg)
     print(msg['parameters'])
     response = run_neurals(msg)
     print(response)
