@@ -12,6 +12,11 @@ from apps.message_runner import gen_responce, run_neurals
 
 from config import init_settings
 
+import os
+ 
+os.chdir('C:/StableDraw/StableDrawNeuralNetworks/Neural_network_processing/')
+print(os.getcwd())
+
 router = RabbitRouter()
 broker = RabbitBroker()
 broker.include_router(router)
@@ -32,7 +37,7 @@ async def base_handler(body, logger: Logger):
     body_json = json.loads(body.decode('utf8'))    
     msg = body_json['message']
     print("sss")
-    print(msg)
+    # print(msg)
     print(msg['parameters'])
     response = run_neurals(msg)
     print(response)
