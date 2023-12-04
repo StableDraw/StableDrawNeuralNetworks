@@ -20,6 +20,8 @@ from Kandinsky_2 import Kandinsky2_inpainting
 from Kandinsky_2 import Kandinsky2_stylization
 from Kandinsky_2 import Kandinsky2_mix_images
 
+#from webui import webui_text2img, webui_img2img, webui_upscaler
+
 
 #Колоризатор (4 модели с одинаковыми параметрами) (будет заменён в скором будущем)
 #Принимает изображение и параметры. Возвращает изображение
