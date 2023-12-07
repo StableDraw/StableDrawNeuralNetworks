@@ -4,7 +4,8 @@ from Image_classifier import Get_image_class
 from Translate import Translator
 from Image_сolorization import Image_сolorizer
 from Image_caption_generator import Gen_caption
-from Delete_background import Delete_background
+from Delete_background import U2NET_Delete_background
+from Delete_background import DIS_Delete_background
 from RealESRGAN import RealESRGAN_upscaler
 from Stable_diffusion import Stable_diffusion_upscaler
 from Stable_diffusion import Stable_diffusion_upscaler_xX
@@ -19,6 +20,7 @@ from Stable_diffusion import Stable_diffusion_inpainting
 from Kandinsky_2 import Kandinsky2_inpainting
 from Kandinsky_2 import Kandinsky2_stylization
 from Kandinsky_2 import Kandinsky2_mix_images
+from webui import webui_upscaler, webui_img2img, webui_text2img
 
 
 #Колоризатор (4 модели с одинаковыми параметрами) (будет заменён в скором будущем)
@@ -51,7 +53,7 @@ def delete_background(init_img_binary_data: bytes, params: dict) -> bytes:
         #Только для модели "DIS":
         "ckpt": "isnet.pth",        # Выбор впретренированных весов модели ("isnet.pth", "isnet-general-use.pth")
         "interm_sup": False,        # Указать, активировать ли контроль промежуточных функций
-        "model_digit": "full",      # Выберите точность с плавающей запятой (устанавливает "half" или "full" точность числа с плавающей запятой)
+        "model_digit": True,        # Выберите точность с плавающей запятой (устанавливает False или True точность числа с плавающей запятой)
         "seed": 0,                  # Инициализирующее значение
         "cache_size": [1024, 1024], # Кешированное входное пространственное разрешение, можно настроить на другой размер
         "input_size": [1024, 1024], # Входной пространственный размер модели, обычно используют одно и то же значение params["cache_size"], что означает, что мы больше не изменяем размер изображений
@@ -59,7 +61,10 @@ def delete_background(init_img_binary_data: bytes, params: dict) -> bytes:
     #max_dim, возможно, даунсемплится по "*_size" параметрам выше. Не исследованно, и зависит от модели. По умолчанию, ограничений нет
     }
     '''
-    binary_data = Delete_background(init_img_binary_data, params)
+    if params["model"] == "U2NET":
+        binary_data = U2NET_Delete_background(init_img_binary_data, params)
+    else:
+        binary_data = DIS_Delete_background(init_img_binary_data, params)
     return binary_data
 
 #Апскейлер (3 группы моделей с разными параметрами, в зависимости от модели или группы моделей, внимательно читайте комментарии)
@@ -77,7 +82,7 @@ def upscaler(init_img_binary_data: bytes, caption: Optional[str], params: dict) 
         "seed": 42,                             #от 0 до 1000000
         "outscale": 4,                          #Величина того, во сколько раз увеличть разшрешение изображения (рекоммендуется 2 для моделей ("StableDiffusionxLatentx2Upscaler" и "RealESRGAN_x2plus") и 4 для остальных)
         "noise_augmentation": 20,               #от 0 до 350
-        "negative_prompt": None,                #отрицательное описание (если без него, то None)
+        "negative_prompt": "",                  #отрицательное описание (если без него, то "")
         "verbose": False,                       #Не знаю что это
         "max_dim": pow(1024, 2),                #Максимальное разрешение ((для всех моделей, кроме "RealESRGAN_x2plus") и "outscale": 4), и pow(2048, 2) (для модели "RealESRGAN_x2plus" и "outscale": 2)
         #Только для моделей RealESR:
@@ -93,10 +98,12 @@ def upscaler(init_img_binary_data: bytes, caption: Optional[str], params: dict) 
     '''
     if params["model"] == "StableDiffusionx4Upscaler":
         binary_data = Stable_diffusion_upscaler(init_img_binary_data, caption, params)
-    elif params["model"] == "StableDiffusionx2Upscaler":
+    elif params["model"] == "StableDiffusionxLatentx2Upscaler":
         binary_data = Stable_diffusion_upscaler_xX(init_img_binary_data, caption, params)
     elif "REALESR" in params["model"].upper():
         binary_data = RealESRGAN_upscaler(init_img_binary_data, params) #передаю путь к рабочей папке
+    elif params["model"] == "webui_upscaler":
+        binary_data = webui_upscaler(init_img_binary_data, params)
     else:
         raise ValueError("Доступны только \"StableDiffusionx4Upscaler\" и \"StableDiffusionx4Upscaler\"")
     return binary_data
@@ -171,6 +178,8 @@ def image_to_image(init_img_binary_data: bytes, caption: str, params: dict) -> L
             binary_data_list = [Stable_diffusion_2_0_image_to_image(init_img_binary_data, caption, params)]
     elif "Kandinsky" in params["version"]:
         binary_data_list = Kandinsky2_image_to_image(init_img_binary_data, caption, params)
+    elif "webui_img2img" in params["version"]:
+        binary_data_list = webui_img2img(init_img_binary_data, caption, params)
     else:
         binary_data_list = Stable_diffusion_XL_image_to_image(init_img_binary_data, caption, params)
     return binary_data_list
@@ -179,7 +188,7 @@ def image_to_image(init_img_binary_data: bytes, caption: str, params: dict) -> L
 #Принимает описание и параметры. Возвращает список изображений
 def text_to_image(caption: str, params: dict) -> List[bytes]:
     '''
-    params = {
+    params = { 
         #Параметры не для пользователя:
         "add_watermark": False, #Добавлять невидимую вотермарку
         "low_vram_mode": False, #Режим для работы на малом количестве видеопамяти
@@ -236,6 +245,8 @@ def text_to_image(caption: str, params: dict) -> List[bytes]:
         binary_data_list = [Stable_diffusion_2_0_text_to_image(caption, params)]
     elif "Kandinsky" in params["version"]:
         binary_data_list = Kandinsky2_text_to_image(caption, params)
+    elif "webui_text2img" in params["version"]:
+        binary_data_list = webui_text2img(caption, params)   
     else:
         binary_data_list = Stable_diffusion_XL_text_to_image(caption, params)
     return binary_data_list
