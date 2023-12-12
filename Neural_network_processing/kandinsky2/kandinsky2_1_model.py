@@ -170,7 +170,7 @@ class Kandinsky2_1:
             elif sampler == "plms_sampler":
                 sampler = PLMSSampler(model = model_fn, old_diffusion = diffusion, schedule = "linear")
             else:
-                raise ValueError("Only ddim_sampler and plms_sampler is available")
+                raise ValueError("Only ddim_sampler and plms_sampler is available") 
             self.model.del_cache()
             if sampler == "ddim_sampler":
                 samples, _ = sampler.sample(num_steps, batch_size * 2, (4, new_h, new_w), conditioning = model_kwargs, x_T = noise, init_step = init_step, eta = ddim_eta)

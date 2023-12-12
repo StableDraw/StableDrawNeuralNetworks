@@ -14,13 +14,12 @@ from INeural import stylization
 from INeural import image_fusion
 
 if __name__ == "__main__":
-    
-    caption = "vector logo of drone on brain background"
-    with open("test_input\\img.png", "rb") as f:
-        init_img_binary_data = f.read()
-    with open("test_input\\img2.png", "rb") as f:
-        mask_binary_data = f.read()
-        
+    caption = "cow illustration in the meadow"
+    with open("test_input\\img3.png", "rb") as f:
+       init_img_binary_data = f.read()
+    with open("test_input\\img1.png", "rb") as f:
+       mask_binary_data = f.read()
+    '''
     params = {
         "ckpt": "ColorizeArtistic_gen",    #Выбор модели ("ColorizeArtistic_gen", "ColorizeArtistic_gen_GrayScale", "ColorizeArtistic_gen_Sketch", "ColorizeArtistic_gen_Sketch2Gray")
         "steps": 1,                        #Количество шагов обработки (минимум 1)
@@ -36,14 +35,13 @@ if __name__ == "__main__":
     
     binary_data = colorizer(init_img_binary_data, params)
     
-
     params = {
         "model": "DIS", #Доступно "U2NET" или "DIS"
         "RescaleT": 320, #Только для модели U2NET
         #Только для модели "DIS":
         "ckpt": "isnet.pth",        # Выбор впретренированных весов модели ("isnet.pth", "isnet-general-use.pth")
         "interm_sup": False,        # Указать, активировать ли контроль промежуточных функций
-        "model_digit": "full",      # Выберите точность с плавающей запятой (устанавливает "half" или "full" точность числа с плавающей запятой)
+        "model_digit": True,        # Выберите точность с плавающей запятой (устанавливает False или True точность числа с плавающей запятой, True для полной точности)
         "seed": 0,                  # Инициализирующее значение
         "cache_size": [1024, 1024], # Кешированное входное пространственное разрешение, можно настроить на другой размер
         "input_size": [1024, 1024], # Входной пространственный размер модели, обычно используют одно и то же значение params["cache_size"], что означает, что мы больше не изменяем размер изображений
@@ -52,7 +50,7 @@ if __name__ == "__main__":
     }
     
     binary_data = delete_background(init_img_binary_data, params)
-    
+    '''
 
     params = {
         "model": "StableDiffusionx4Upscaler",   #("StableDiffusionx4Upscaler", "StableDiffusionxLatentx2Upscaler", "RealESRGAN_x4plus" - модель x4 RRDBNet, "RealESRNet_x4plus" - модель x4 RRDBNet, "RealESRGAN_x4plus_anime_6B" - модель x4 RRDBNet с 6 блоками, "RealESRGAN_x2plus" - модель x2 RRDBNet, "realesr-animevideov3" - модель x4 VGG-стиля (размера XS), "realesr-general-x4v3" - модель x4 VGG-стиля (размера S))
@@ -62,9 +60,9 @@ if __name__ == "__main__":
         "ckpt": "x4-upscaler-ema.safetensors",  #выбор весов модели ("x4-upscaler-ema.safetensors", только для модели "StableDiffusionx4Upscaler")
         "sampler": "ddim_sampler",              #выбор обработчика ("ddim_sampler", "plms_sampler", "p_sampler", только для модели "StableDiffusionx4Upscaler")
         "seed": 42,                             #от 0 до 1000000
-        "outscale": 4,                          #Величина того, во сколько раз увеличть разшрешение изображения (рекоммендуется 2 для моделей ("StableDiffusionxLatentx2Upscaler" и "RealESRGAN_x2plus") и 4 для остальных)
-        "noise_augmentation": 20,               #от 0 до 350
-        "negative_prompt": None,                #отрицательное описание (если без него, то None)
+        "outscale": 2,                          #Величина того, во сколько раз увеличть разшрешение изображения (рекоммендуется 2 для моделей ("StableDiffusionxLatentx2Upscaler" и "RealESRGAN_x2plus") и 4 для остальных)
+        "noise_augmentation": 0,                #от 0 до 350
+        "negative_prompt": "",                  #отрицательное описание (если без него, то "")
         "verbose": False,                       #Не знаю что это
         "max_dim": pow(1024, 2),                #Максимальное разрешение ((для всех моделей, кроме "RealESRGAN_x2plus") и "outscale": 4), и pow(2048, 2) (для модели "RealESRGAN_x2plus" и "outscale": 2)
         #Только для моделей RealESR:
@@ -75,11 +73,11 @@ if __name__ == "__main__":
         "face_enhance": False,                  #Использовать GFPGAN улучшения лиц
         "fp32": True,                           #Использовать точность fp32 во время вывода. По умолчанию fp16 (половинная точность)
         "alpha_upsampler": "realesrgan",        #Апсемплер для альфа-каналов. Варианты: realesrgan | bicubic
-        "gpu-id": None                          #Устройство gpu для использования (по умолчанию = None) может быть 0, 1, 2 для обработки на нескольких GPU
+        "gpu-id": 0                             #Устройство gpu для использования (по умолчанию = 0) может быть 0, 1, 2 для обработки на нескольких GPU
     }
     
     binary_data = upscaler(init_img_binary_data, caption, params)
-
+    Image.open(io.BytesIO(binary_data)).convert("RGBA").show()
 
     params = {
         #Параметры не для пользователя:
@@ -198,7 +196,6 @@ if __name__ == "__main__":
 
     binary_data = text_to_image(caption, params)[0]
     
-
     params = {
         "ckpt": "caption_base_best.pt", #используемые чекпоинты (caption_huge_best.pt или caption_base_best.pt)
         "eval_cider": True,             #оценка с помощью баллов CIDEr
@@ -271,7 +268,7 @@ if __name__ == "__main__":
     }
     
     binary_data = inpainting(init_img_binary_data, mask_binary_data, caption, params)[0]
-
+    
 
     params = {
         "low_vram_mode": False, #Режим для работы на малом количестве видеопамяти

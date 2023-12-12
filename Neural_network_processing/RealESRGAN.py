@@ -4,9 +4,12 @@ import os
 import numpy as np
 import torch
 from PIL import Image
+#from MultichannelRealESRGAN.edited_scripts.basicsr.archs.rrdbnet_arch import RRDBNet
+#from MultichannelRealESRGAN.edited_scripts.basicsr.utils.download_util import load_file_from_url
+#from MultichannelRealESRGAN.edited_scripts.realesrgan_utils import RealESRGANer
 from basicsr.archs.rrdbnet_arch import RRDBNet
 from basicsr.utils.download_util import load_file_from_url
-from realesrgan import RealESRGANer
+from realesrgan.utils import RealESRGANer
 from realesrgan.archs.srvgg_arch import SRVGGNetCompact
 from gfpgan import GFPGANer
 

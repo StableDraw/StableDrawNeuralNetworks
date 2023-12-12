@@ -134,7 +134,7 @@ def Stable_diffusion_image_to_image(binary_data, prompt, opt):
     config_path = "configs\\stable-diffusion\\"
     config_list = ["v1-inference.yaml", "v2-inference.yaml"]
     seed_everything(opt["seed"])
-    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["custom_ckpt_namet"]]])
+    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["custom_ckpt_name"]]])
     model = load_model_from_config(config, checkpoint_path + opt["custom_ckpt_name"])
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
@@ -143,13 +143,15 @@ def Stable_diffusion_image_to_image(binary_data, prompt, opt):
     elif opt["sampler"] == "p_sampler":
         sampler = DPMSolverSampler(model)
         opt["steps"] += 1
-    else:
+    elif opt["sampler"] == "ddim_sampler":
         sampler = DDIMSampler(model)
+    else:
+        raise ValueError("Only ddim_sampler and plms_sampler and p_sampler is available")
     init_image = repeat(torch.from_numpy(2.0 * (numpy.array(load_img(binary_data, opt["max_dim"])).astype(numpy.float32) / 255.0)[None].transpose(0, 3, 1, 2) - 1.).to(device), '1 ... -> b ...', b = 1)
     init_latent = model.get_first_stage_encoding(model.encode_first_stage(init_image))  # переместить в латентное пространство
-    sampler.make_schedule(ddim_num_steps = opt["ddim_steps"], ddim_eta = opt["ddim_eta"], verbose = False)
+    sampler.make_schedule(ddim_num_steps = opt["steps"], ddim_eta = opt["ddim_eta"], verbose = False)
     assert 0. <= opt["i2i_strength"] <= 1., 'can only work with strength in [0.0, 1.0]'
-    t_enc = int(opt["i2i_strength"] * opt["ddim_steps"])
+    t_enc = int(opt["i2i_strength"] * opt["steps"])
     print(f"Целевое декодирование t_enc из {t_enc} шагов")
     precision_scope = autocast
     with torch.no_grad():
@@ -181,7 +183,7 @@ def Stable_diffusion_depth_to_image(binary_data, prompt, opt):
     }
     config_path = "configs\\stable-diffusion\\"
     config_list = ["v2-midas-inference.yaml"]
-    config = config_path + config_list[checkpoint_list["custom_ckpt_name"]]
+    config = config_path + config_list[checkpoint_list[opt["custom_ckpt_name"]]]
     seed_everything(opt["seed"])
     image = load_img(binary_data, opt["max_dim"])
     assert 0. <= opt["i2i_strength"] <= 1., "может работать с параметром шума в интервале от 0.0 до 1.0"
@@ -190,7 +192,7 @@ def Stable_diffusion_depth_to_image(binary_data, prompt, opt):
     else:
         do_full_sample = False
     t_enc = min(int(opt["i2i_strength"] * opt["steps"]), opt["steps"] - 1)
-    config = OmegaConf.load(config_path + config_list[checkpoint_list["custom_ckpt_name"]])
+    config = OmegaConf.load(config_path + config_list[checkpoint_list[opt["custom_ckpt_name"]]])
     model = load_model_from_config(config, checkpoint_path + opt["custom_ckpt_name"])
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
@@ -199,9 +201,11 @@ def Stable_diffusion_depth_to_image(binary_data, prompt, opt):
     elif opt["sampler"] == "p_sampler":
         sampler = DPMSolverSampler(model)
         opt["steps"] += 1
-    else:
+    elif opt["sampler"] == "ddim_sampler":
         sampler = DDIMSampler(model)
-    sampler.make_schedule(ddim_num_steps = opt['ddim_steps'], ddim_eta = opt['ddim_eta'], verbose = opt["verbose"])
+    else:
+        raise ValueError("Only ddim_sampler and plms_sampler and p_sampler is available")
+    sampler.make_schedule(ddim_num_steps = opt["steps"], ddim_eta = opt["ddim_eta"], verbose = opt["verbose"])
     image = numpy.array(image.convert("RGB"))
     image = torch.from_numpy(image).to(dtype = torch.float32) / 127.5 - 1.0
     # sample["jpg"] это тензор hwc в [-1, 1] в этом месте
@@ -438,7 +442,7 @@ class StableDiffusionLatentUpscalePipeline(DiffusionPipeline):
         text_pooler_out = text_encoder_out.pooler_output
         # Получить безусловные эмбединги для классификации свободного управления
         if do_classifier_free_guidance:
-            if negative_prompt is None:
+            if negative_prompt is "":
                 uncond_tokens = [""] * batch_size
             elif isinstance(negative_prompt, str):
                 uncond_tokens = [negative_prompt]
@@ -506,7 +510,7 @@ class StableDiffusionLatentUpscalePipeline(DiffusionPipeline):
         noise_level = torch.tensor([opt["noise_augmentation"]], dtype = torch.float32, device = device)
         noise_level = torch.cat([noise_level] * image.shape[0])
         inv_noise_level = (noise_level ** 2 + 1) ** (-0.5)
-        image_cond = torch.nn.functional.interpolate(image, scale_factor = 2, mode = "nearest") * inv_noise_level[:, None, None, None]
+        image_cond = torch.nn.functional.interpolate(image, scale_factor = opt["outscale"], mode = "nearest") * inv_noise_level[:, None, None, None]
         image_cond = image_cond.to(text_embeddings.dtype)
         noise_level_embed = torch.cat(
             [
@@ -523,7 +527,7 @@ class StableDiffusionLatentUpscalePipeline(DiffusionPipeline):
         # 7. Проверка того, что размеры изображения и латенты совпадают
         num_channels_image = image.shape[1]
         if num_channels_latents + num_channels_image != self.unet.config.in_channels:
-            raise ValueError(f"Некорректные настройки конфигурации! Конфигурация 'pipeline.unet': {self.unet.config} ожидалось {self.unet.config.in_channels} но получено 'num_channels_latents': {num_channels_latents} + 'num_channels_image': {num_channels_image} = {num_channels_latents+num_channels_image}. Пожалуйста сверьте конфигурацию 'pipeline.unet' или входной параметр 'image'")
+            raise ValueError(f"Некорректные настройки конфигурации! Конфигурация 'pipeline.unet': {self.unet.config} ожидалось {self.unet.config.in_channels} но получено 'num_channels_latents': {num_channels_latents} + 'num_channels_image': {num_channels_image} = {num_channels_latents + num_channels_image}. Пожалуйста сверьте конфигурацию 'pipeline.unet' или входной параметр 'image'")
         # 9. Цикл шумоподавления
         num_warmup_steps = 0
         with self.progress_bar(total=num_inference_steps) as progress_bar:

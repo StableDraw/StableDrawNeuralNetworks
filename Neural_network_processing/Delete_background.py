@@ -27,7 +27,7 @@ def load_image(image_bytes, params, transform):
 
 def build_model(params, device, restore_model):
     net = ISNetDIS()
-    if(params["model_digit"] == "half"): # конвертация в половинную точность
+    if(params["model_digit"] == False): # конвертация в половинную точность
         net.half()
         for layer in net.modules():
             if isinstance(layer, BatchNorm2d):
@@ -40,7 +40,7 @@ def build_model(params, device, restore_model):
 
 def predict(net,  inputs_val, shapes_val, params, device): #Получено изображение Image, вычисление маски
     net.eval()
-    if(params["model_digit"] == "full"):
+    if(params["model_digit"] == True):
         inputs_val = inputs_val.type(torch.FloatTensor)
     else:
         inputs_val = inputs_val.type(torch.HalfTensor)
@@ -246,11 +246,4 @@ def DIS_Delete_background(binary_data, params):
     orig.save(buf, format = "PNG")
     result_binary_data = buf.getvalue()
     torch.cuda.empty_cache()
-    return result_binary_data
-
-def Delete_background(binary_data, params):
-    if params["model"] == "U2NET":
-        result_binary_data = U2NET_Delete_background(binary_data, params)
-    else:
-        result_binary_data = DIS_Delete_background(binary_data, params)
     return result_binary_data
