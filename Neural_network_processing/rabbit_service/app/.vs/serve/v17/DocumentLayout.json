@@ -3,31 +3,46 @@
   "WorkspaceRootPath": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\rabbit_service\\app\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\INeural.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|c:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\rabbit_service\\app\\apps\\message_runner.py||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:apps\\message_runner.py||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\rabbit_service\\app\\apps\\INeuralProxy.py||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:apps\\INeuralProxy.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDrawWeb\\Client\\neural.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Stable_diffusionXL.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\sgm\\modules\\diffusionmodules\\sampling.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\sgm\\modules\\diffusionmodules\\__init__.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7A5CB8AF-8738-422D-9143-9CDEBFCDD5F2}|serve.pyproj|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\rabbit_service\\app\\serve.py||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{7A5CB8AF-8738-422D-9143-9CDEBFCDD5F2}|serve.pyproj|solutionrelative:serve.py||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Stable_diffusion.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Neural_network_processing.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDrawWeb\\Client\\neural.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\webui_api\\__init__.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\INeural.py||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\kandinsky2\\kandinsky2_2_model.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\rabbit_service\\app\\apps\\INeuralProxy.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:apps\\INeuralProxy.py||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\webui.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Stable_diffusion.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\kandinsky2\\kandinsky2_2_model.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\web_api.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
@@ -37,12 +52,6 @@
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\kandinsky2\\kandinsky2_model.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Neural_network_processing.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\webui_api\\__init__.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\kandinsky2\\model\\prior.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
@@ -70,25 +79,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 1498,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
               "Title": "serve.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\rabbit_service\\app\\serve.py",
               "RelativeDocumentMoniker": "serve.py",
               "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\rabbit_service\\app\\serve.py",
               "RelativeToolTip": "serve.py",
-              "ViewState": "AQIAABkAAAAAAAAAAAAjwC0AAAAIAAAA",
+              "ViewState": "AQIAAA8AAAAAAAAAAAD4vy0AAAAIAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
               "WhenOpened": "2023-11-05T10:41:33.869Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 9,
               "Title": "INeuralProxy.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\rabbit_service\\app\\apps\\INeuralProxy.py",
               "RelativeDocumentMoniker": "apps\\INeuralProxy.py",
@@ -97,43 +105,107 @@
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
               "WhenOpened": "2023-11-14T10:24:25.355Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "message_runner.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\rabbit_service\\app\\apps\\message_runner.py",
               "RelativeDocumentMoniker": "apps\\message_runner.py",
               "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\rabbit_service\\app\\apps\\message_runner.py",
               "RelativeToolTip": "apps\\message_runner.py",
-              "ViewState": "AQIAAHwAAAAAAAAAAAASwJQAAAAAAAAA",
+              "ViewState": "AQIAABgAAAAAAAAAAAAAAC4AAAALAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
               "WhenOpened": "2023-11-05T10:44:25.473Z",
               "IsPinned": true,
               "EditorCaption": ""
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "INeural.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\INeural.py",
+              "RelativeDocumentMoniker": "..\\..\\INeural.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\INeural.py",
+              "RelativeToolTip": "..\\..\\INeural.py",
+              "ViewState": "AQIAANsAAAAAAAAAAAApwAYBAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-11-14T10:25:38.482Z",
+              "IsPinned": true,
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "neural.json",
               "DocumentMoniker": "C:\\StableDrawWeb\\Client\\neural.json",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\StableDrawWeb\\Client\\neural.json",
               "ToolTip": "C:\\StableDrawWeb\\Client\\neural.json",
               "RelativeToolTip": "..\\..\\..\\..\\..\\StableDrawWeb\\Client\\neural.json",
-              "ViewState": "AQIAAP0EAAAAAAAAAAAiwAoFAAAbAAAA",
+              "ViewState": "AQIAAF4LAAAAAAAAAAAowH4LAAAQAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2023-12-05T10:56:44.23Z",
+              "IsPinned": true,
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
+              "Title": "Stable_diffusionXL.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Stable_diffusionXL.py",
+              "RelativeDocumentMoniker": "..\\..\\Stable_diffusionXL.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Stable_diffusionXL.py",
+              "RelativeToolTip": "..\\..\\Stable_diffusionXL.py",
+              "ViewState": "AQIAAOUBAAAAAAAAAAApwAMCAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-12-17T20:30:04.338Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "sampling.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\sgm\\modules\\diffusionmodules\\sampling.py",
+              "RelativeDocumentMoniker": "..\\..\\sgm\\modules\\diffusionmodules\\sampling.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\sgm\\modules\\diffusionmodules\\sampling.py",
+              "RelativeToolTip": "..\\..\\sgm\\modules\\diffusionmodules\\sampling.py",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAABMAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-12-18T21:26:54.148Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Neural_network_processing.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Neural_network_processing.py",
+              "RelativeDocumentMoniker": "..\\..\\Neural_network_processing.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Neural_network_processing.py",
+              "RelativeToolTip": "..\\..\\Neural_network_processing.py",
+              "ViewState": "AQIAAIMEAAAAAAAAAAAAAM0EAAAiAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-12-05T06:06:00.696Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "__init__.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\sgm\\modules\\diffusionmodules\\__init__.py",
+              "RelativeDocumentMoniker": "..\\..\\sgm\\modules\\diffusionmodules\\__init__.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\sgm\\modules\\diffusionmodules\\__init__.py",
+              "RelativeToolTip": "..\\..\\sgm\\modules\\diffusionmodules\\__init__.py",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-12-18T21:56:03.334Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
               "Title": "Stable_diffusion.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Stable_diffusion.py",
               "RelativeDocumentMoniker": "..\\..\\Stable_diffusion.py",
@@ -141,12 +213,11 @@
               "RelativeToolTip": "..\\..\\Stable_diffusion.py",
               "ViewState": "AQIAAMMBAAAAAAAAAAAjwNABAAAQAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2023-11-24T16:03:57.73Z",
-              "EditorCaption": ""
+              "WhenOpened": "2023-11-24T16:03:57.73Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 12,
               "Title": "kandinsky2_2_model.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\kandinsky2\\kandinsky2_2_model.py",
               "RelativeDocumentMoniker": "..\\..\\kandinsky2\\kandinsky2_2_model.py",
@@ -154,25 +225,35 @@
               "RelativeToolTip": "..\\..\\kandinsky2\\kandinsky2_2_model.py",
               "ViewState": "AQIAAAMAAAAAAAAAAAAjwBMAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2023-11-24T17:15:14.783Z",
-              "EditorCaption": ""
+              "WhenOpened": "2023-11-24T17:15:14.783Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 19,
+              "Title": "RealESRGAN.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\RealESRGAN.py",
+              "RelativeDocumentMoniker": "..\\..\\RealESRGAN.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\RealESRGAN.py",
+              "RelativeToolTip": "..\\..\\RealESRGAN.py",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAQAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-11-17T12:07:49.693Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "webui.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\webui.py",
               "RelativeDocumentMoniker": "..\\..\\webui.py",
               "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\webui.py",
               "RelativeToolTip": "..\\..\\webui.py",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAASAAAA",
+              "ViewState": "AQIAAI0AAAAAAAAAAAAAAIgAAAAMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2023-12-04T22:21:15.748Z",
-              "EditorCaption": ""
+              "WhenOpened": "2023-12-04T22:21:15.748Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 16,
               "Title": "prior.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\kandinsky2\\model\\prior.py",
               "RelativeDocumentMoniker": "..\\..\\kandinsky2\\model\\prior.py",
@@ -180,12 +261,11 @@
               "RelativeToolTip": "..\\..\\kandinsky2\\model\\prior.py",
               "ViewState": "AQIAACwBAAAAAAAAAAAMwIoBAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2023-11-28T14:38:48.982Z",
-              "EditorCaption": ""
+              "WhenOpened": "2023-11-28T14:38:48.982Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 18,
               "Title": "kandinsky2_1_model.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\kandinsky2\\kandinsky2_1_model.py",
               "RelativeDocumentMoniker": "..\\..\\kandinsky2\\kandinsky2_1_model.py",
@@ -197,7 +277,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 14,
               "Title": "Delete_background.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Delete_background.py",
               "RelativeDocumentMoniker": "..\\..\\Delete_background.py",
@@ -205,12 +285,11 @@
               "RelativeToolTip": "..\\..\\Delete_background.py",
               "ViewState": "AQIAALUAAAAAAAAAAAAjwMQAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2023-12-05T11:07:24.199Z",
-              "EditorCaption": ""
+              "WhenOpened": "2023-12-05T11:07:24.199Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 13,
               "Title": "web_api.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\web_api.py",
               "RelativeDocumentMoniker": "..\\..\\web_api.py",
@@ -218,12 +297,11 @@
               "RelativeToolTip": "..\\..\\web_api.py",
               "ViewState": "AQIAAPkAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2023-12-05T20:26:22.058Z",
-              "EditorCaption": ""
+              "WhenOpened": "2023-12-05T20:26:22.058Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 8,
               "Title": "__init__.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\webui_api\\__init__.py",
               "RelativeDocumentMoniker": "..\\..\\webui_api\\__init__.py",
@@ -231,12 +309,11 @@
               "RelativeToolTip": "..\\..\\webui_api\\__init__.py",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2023-12-04T23:09:44.161Z",
-              "EditorCaption": ""
+              "WhenOpened": "2023-12-04T23:09:44.161Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 17,
               "Title": "model.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\ldm\\modules\\diffusionmodules\\model.py",
               "RelativeDocumentMoniker": "..\\..\\ldm\\modules\\diffusionmodules\\model.py",
@@ -244,12 +321,11 @@
               "RelativeToolTip": "..\\..\\ldm\\modules\\diffusionmodules\\model.py",
               "ViewState": "AQIAAFUAAAAAAAAAAAAUwGYAAAAuAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2023-11-23T11:41:08.357Z",
-              "EditorCaption": ""
+              "WhenOpened": "2023-11-23T11:41:08.357Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 15,
               "Title": "kandinsky2_model.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\kandinsky2\\kandinsky2_model.py",
               "RelativeDocumentMoniker": "..\\..\\kandinsky2\\kandinsky2_model.py",
@@ -257,25 +333,11 @@
               "RelativeToolTip": "..\\..\\kandinsky2\\kandinsky2_model.py",
               "ViewState": "AQIAACcAAAAAAAAAAAAAAEIAAAAYAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2023-11-28T14:44:13.006Z",
-              "EditorCaption": ""
+              "WhenOpened": "2023-11-28T14:44:13.006Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "Neural_network_processing.py",
-              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Neural_network_processing.py",
-              "RelativeDocumentMoniker": "..\\..\\Neural_network_processing.py",
-              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Neural_network_processing.py",
-              "RelativeToolTip": "..\\..\\Neural_network_processing.py",
-              "ViewState": "AQIAAAEAAAAAAAAAAAAvwA8AAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2023-12-05T06:06:00.696Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 21,
               "Title": "caption.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\tasks\\mm_tasks\\caption.py",
               "RelativeDocumentMoniker": "..\\..\\tasks\\mm_tasks\\caption.py",
@@ -287,7 +349,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 20,
               "Title": "rrdbnet_arch.py",
               "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\MultichannelRealESRGAN\\edited_scripts\\basicsr\\archs\\rrdbnet_arch.py",
               "RelativeDocumentMoniker": "..\\..\\MultichannelRealESRGAN\\edited_scripts\\basicsr\\archs\\rrdbnet_arch.py",
@@ -296,37 +358,6 @@
               "ViewState": "AQIAAFEAAAAAAAAAAAAlwG8AAAAPAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
               "WhenOpened": "2023-11-21T17:48:42.687Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "RealESRGAN.py",
-              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\RealESRGAN.py",
-              "RelativeDocumentMoniker": "..\\..\\RealESRGAN.py",
-              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\RealESRGAN.py",
-              "RelativeToolTip": "..\\..\\RealESRGAN.py",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAQAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2023-11-17T12:07:49.693Z"
-            }
-          ]
-        },
-        {
-          "DockedWidth": 1498,
-          "SelectedChildIndex": 0,
-          "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "INeural.py",
-              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\INeural.py",
-              "RelativeDocumentMoniker": "..\\..\\INeural.py",
-              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\INeural.py",
-              "RelativeToolTip": "..\\..\\INeural.py",
-              "ViewState": "AQIAAGUBAAAAAAAAAAAAAGgBAAApAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2023-11-14T10:25:38.482Z",
-              "EditorCaption": ""
             }
           ]
         }

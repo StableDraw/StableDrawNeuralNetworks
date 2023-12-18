@@ -202,7 +202,6 @@ def text_to_image(caption: str, params: dict) -> List[bytes]:
         "denoised_type": "dynamic_threshold", #("dynamic_threshold", "clip_denoised") только для "Kandinsky2.0"
         "use_custom_ckpt": False, #Использовать свои веса для выбранной версии модели
         "custom_ckpt_name": "v2-1_512-ema-pruned.safetensors", #Имя кастомной модели, либо (если выбран "use_custom_ckpt", обязательный параметр), либо (для модели "SD-2.0", как обязательный параметр. Может быть "v2-1_512-ema-pruned.safetensors", "v2-1_512-nonema-pruned.safetensors", "v2-1_768-ema-pruned.safetensors", "v2-1_768-nonema-pruned.safetensors")      
-        "version2SDXL-refiner": False, #Только для версий SDXL-base: загрузить SDXL-refiner как модель для второй стадии обработки. Требует более длительной обработки и больше видеопамяти
         "seed": 42, #Инициализирующее значение (может быть от 0 до 1000000000)
         "negative_prompt": "", #Для всех моделей, кроме (SDXL-base и Kandinsky 2.0): негативное описание
         "negative_prior_prompt": "", #Только для Kandinsky > 2.0
@@ -241,6 +240,13 @@ def text_to_image(caption: str, params: dict) -> List[bytes]:
         "prior_steps": 25, #Только для Kandinsky > 2.0
     }
     '''
+    # binary_data_list = [b""]
+    # '''
+    # params["refinement_strength"] = 0.15
+    # params["h"] = 256
+    # params["w"] = 256
+    # params["use_custom_res"] = True
+    # params["version"] = "SDXL-base-1.0"
     if params["version"] == "SD-2.0":
         binary_data_list = [Stable_diffusion_2_0_text_to_image(caption, params)]
     elif "Kandinsky" in params["version"]:
@@ -249,6 +255,11 @@ def text_to_image(caption: str, params: dict) -> List[bytes]:
         binary_data_list = webui_text2img(caption, params)   
     else:
         binary_data_list = Stable_diffusion_XL_text_to_image(caption, params)
+        # with open("C:\\Users\\Robolightning\\Desktop\\cow.png", "wb") as f:
+        #     f.write(binary_data_list[0])
+    # '''
+    # with open("C:\\Users\\Robolightning\\Desktop\\cow illustration in the meadow.png", "rb") as f:
+        # binary_data_list = [f.read()]
     return binary_data_list
 
 #Генерация описания для изображения (Image captioning) (1 нейронка, параметры только для неё. Но скоро будет заменена другой нейронкой)
@@ -368,7 +379,7 @@ def stylization(content_binary_data: bytes, style_binary_data: bytes, caption: s
 
 #Совмещение изображений (Image fusion) (1 модель, но у неё 2 версии, внимательно читайте комментарии к параметрам, они могу относиться к разным версиям)
 #Принимает первое и второе изображения для совмещения, описание первого и второго изображения для совмещения и словарь параметров. Возвращает список изображений
-def image_fusion(img1_binary_data: bytes, img2_binary_data: bytes, caption1: str, caption2: str, params: dict) -> List[bytes]:
+def image_fusion(img1_binary_data: bytes, img2_binary_data: bytes, prompt1: str, prompt2: str, params: dict) -> List[bytes]:
     '''
     params = {
         "version": "Kandinsky2.2", #("Kandinsky2.1", "Kandinsky2.2")
@@ -393,5 +404,5 @@ def image_fusion(img1_binary_data: bytes, img2_binary_data: bytes, caption1: str
         "negative_prompt": ""
     }
     '''
-    binary_data_list = Kandinsky2_mix_images(img1_binary_data, img2_binary_data, caption1, caption2, params)
+    binary_data_list = Kandinsky2_mix_images(img1_binary_data, img2_binary_data,  prompt1, prompt2, params)
     return binary_data_list

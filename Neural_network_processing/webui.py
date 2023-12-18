@@ -63,7 +63,7 @@ def webui_text2img_controlnet(init_img_binary_data: bytes, caption: str, params:
         binary_data_list.append(img_byte_arr.getvalue())
     return binary_data_list
 
-def webui_img2img(init_img_binary_data_list: List[bytes], caption: str, params: dict) -> bytes:
+def webui_img2img(init_img_binary_data: bytes, caption: str, params: dict) -> bytes:
     '''
     params={
         "host": "127.0.0.1", #хост где запущен webui
@@ -96,10 +96,8 @@ def webui_img2img(init_img_binary_data_list: List[bytes], caption: str, params: 
         "s_noise":1, #Только для обработчиков ("EulerEDMSampler" или "HeunEDMSampler" или "EulerAncestralSampler" или "DPMPP2SAncestralSampler") и "s_churn" > 0 (от 0.0)
     }
     '''
-    input_image_list = []
-    for byte_image in init_img_binary_data_list:
-        input_image_list.append(Image.open(io.BytesIO(byte_image)))
-    result = web_api.img2img(images=input_image_list, prompt=caption, **params)
+    image = Image.open(io.BytesIO(init_img_binary_data))
+    result = web_api.img2img(images=[image], prompt=caption, **params)
     img_byte_arr = io.BytesIO()
     result.image.save(img_byte_arr, format='PNG')
     binary_data = img_byte_arr.getvalue()

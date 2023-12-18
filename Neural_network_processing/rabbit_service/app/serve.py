@@ -45,7 +45,7 @@ async def base_handler(body, logger: Logger):
             body_json, response, "StableDraw.Contracts.NeuralContracts.Replies:INeuralReply")  
         await broker.publish(response.encode('utf-8'), queue="neural-state", exchange=exchOutput)
     except Exception as ex:
-        res_msg = gen_message(msg['orderId'], msg['neural_type'], errorMsg=ex.__str__)
+        res_msg = gen_message(msg['orderId'], msg['neuralType'], errorMsg=ex.__str__)
         res_response = gen_responce(body_json, res_msg, "StableDraw.Contracts.NeuralContracts.Replies:INeuralReply")
         await broker.publish(res_response.encode('utf-8'), queue="neural-state", exchange=exchOutput)
         

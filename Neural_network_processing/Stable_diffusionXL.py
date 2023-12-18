@@ -449,10 +449,6 @@ def do_img2img(img, model, sampler, value_dict, num_samples, force_uc_zero_embed
 def prepare_SDXL(opt):
     version_dict = VERSION2SPECS[opt["version"]]
     set_lowvram_mode(opt["low_vram_mode"])
-    if opt["version"].startswith("SDXL-base"):
-        add_pipeline = opt["version2SDXL-refiner"]
-    else:
-        add_pipeline = False
     seed_everything(opt["seed"])
     state = init_sd(opt = opt, version_dict = version_dict, load_filter = True)
     is_legacy = version_dict["is_legacy"]
@@ -464,13 +460,16 @@ def prepare_SDXL(opt):
     finish_denoising = False
     state2 = None
     sampler2 = None
-    if add_pipeline:
+    if opt["version"].startswith("SDXL-base") and opt["refiner"] != "":
+        add_pipeline = True
         state2 = init_sd(opt = opt, version_dict = VERSION2SPECS[opt["refiner"]], load_filter = False)
         stage2strength = opt["refinement_strength"]
         sampler2, *_ = init_sampling(opt = opt, img2img_strength = stage2strength, specify_num_samples = False)
         finish_denoising = opt["finish_denoising"]
         if not finish_denoising:
             stage2strength = None
+    else:
+        add_pipeline = False
     return state, add_pipeline, stage2strength, state2, sampler2, finish_denoising, negative_prompt
 
 def apply_refiner(opt, input, state, sampler, num_samples, prompt, filter = None, finish_denoising = False):
@@ -514,7 +513,7 @@ def Stable_diffusion_XL_text_to_image(prompt, opt):
     state, return_latents, stage2strength, state2, sampler2, finish_denoising, negative_prompt = prepare_SDXL(opt)
     filter = state.get("filter")
     version_dict = VERSION2SPECS[opt["version"]]
-    if opt["use_recommended_res"] == True:
+    if opt["use_custom_res"] == False:
         H = version_dict["H"]
         W = version_dict["W"]
     else:
