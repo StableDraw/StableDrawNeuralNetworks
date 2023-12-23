@@ -1,0 +1,9 @@
+[submodule "Neural_network_processing/upscaler/MultichannelRealESRGAN"]
+	path = Neural_network_processing/upscaler/MultichannelRealESRGAN
+	url = https://github.com/Robolightning/Multichannel-Real-ESRGAN
+[submodule "Neural_network_processing/upscaler/StableDiffusionx4Upscaler"]
+	path = Neural_network_processing/upscaler/StableDiffusionx4Upscaler
+	url = https://github.com/Robolightning/StableDiffusionx4Upscaler
+[submodule "Neural_network_processing/upscaler/StableDiffusionx2LatentUpscaler"]
+	path = Neural_network_processing/upscaler/StableDiffusionx2LatentUpscaler
+	url = https://github.com/Robolightning/StableDiffusionx2LatentUpscaler
