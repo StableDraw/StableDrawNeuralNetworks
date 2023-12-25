@@ -53,7 +53,7 @@ if __name__ == "__main__":
     '''
 
     params = {
-        "model": "StableDiffusionx4Upscaler",   #("StableDiffusionx4Upscaler", "StableDiffusionxLatentx2Upscaler", "RealESRGAN_x4plus" - модель x4 RRDBNet, "RealESRNet_x4plus" - модель x4 RRDBNet, "RealESRGAN_x4plus_anime_6B" - модель x4 RRDBNet с 6 блоками, "RealESRGAN_x2plus" - модель x2 RRDBNet, "realesr-animevideov3" - модель x4 VGG-стиля (размера XS), "realesr-general-x4v3" - модель x4 VGG-стиля (размера S))
+        "model": "RealESRGAN_x2plus",   #("StableDiffusionx4Upscaler", "StableDiffusionxLatentx2Upscaler", "RealESRGAN_x4plus" - модель x4 RRDBNet, "RealESRNet_x4plus" - модель x4 RRDBNet, "RealESRGAN_x4plus_anime_6B" - модель x4 RRDBNet с 6 блоками, "RealESRGAN_x2plus" - модель x2 RRDBNet, "realesr-animevideov3" - модель x4 VGG-стиля (размера XS), "realesr-general-x4v3" - модель x4 VGG-стиля (размера S))
         "steps": 50,                            #Шаги DDIM, от 2 до 250
         "ddim_eta": 0.0,                        #значения от 0.0 до 1.0, η = 0.0 соответствует детерминированной выборке
         "guidance_scale": 9.0,                  #от 0.1 до 30.0
@@ -71,13 +71,22 @@ if __name__ == "__main__":
         "tile_pad": 10,                         #Заполнение плитки
         "pre_pad": 0,                           #Предварительный размер заполнения на каждой границе
         "face_enhance": False,                  #Использовать GFPGAN улучшения лиц
+        "version": "RestoreFormer_GFPGAN",      #Версия модели для улучшения лиц. Только для моделей семейства RealESRGAN, если выбран "face_enhance: True. Возможне значения: "1.1", "1.2", "1.3", "1.4", "RestoreFormerGFPGAN", "RestoreFormer". Модель 1.1 тестовая, но способна колоризировать. Модель 1.2 обучена на большем количестве данных с предобработкой, не способна колоризировать, генерирует достаточно чёткие изображения с красивым магияжем, однако иногда результат генерации выглядит не натурально. Модель 1.3 основана на модели 1.2, генерирует более натурально выглядящие изображения, однако не такие чёткие, выдаёт лучие результаты на более низкокачественных изображениях, работает с относительно высококачественными изображениями, может иметь повторяющееся (дважды) восстановление. Модель 1.4 обеспечивает немного больше деталей и лучшую идентичность. Модель RestoreFormer создана специально для улучшения лиц, "RestoreFormer_GFPGAN" обеспечивает более чёткую, однако менее натуралистичную обработку и иногда создаёт артифакты.
+        "input_is_latent": True,                #Скрытый ли вход. Только для моделей семейства RealESRGAN, если выбран "face_enhance: True и "version" от 1.1 до 1.4. Если выбран, то результат менее насыщенный и чёткий, но более наруральный
         "fp32": True,                           #Использовать точность fp32 во время вывода. По умолчанию fp16 (половинная точность)
         "alpha_upsampler": "realesrgan",        #Апсемплер для альфа-каналов. Варианты: realesrgan | bicubic
         "gpu-id": 0                             #Устройство gpu для использования (по умолчанию = 0) может быть 0, 1, 2 для обработки на нескольких GPU
     }
-    
+    with open("C:\\Users\\Robolightning\\Desktop\\roma.png", "rb") as f:
+        init_img_binary_data = f.read()
+    binary_data = upscaler(init_img_binary_data, caption, params)
+    Image.open(io.BytesIO(binary_data)).convert("RGBA").save("C:\\repos\\Real-ESRGAN\\roma_big.png")
+
+
+    '''
     binary_data = upscaler(init_img_binary_data, caption, params)
     Image.open(io.BytesIO(binary_data)).convert("RGBA").show()
+    '''
 
     params = {
         #Параметры не для пользователя:

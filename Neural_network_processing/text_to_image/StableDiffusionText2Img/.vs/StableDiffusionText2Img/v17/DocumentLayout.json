@@ -1,0 +1,71 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\text_to_image\\StableDiffusionText2Img\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\text_to_image\\StableDiffusionText2Img\\ldm\\modules\\diffusionmodules\\openaimodel.py||{8B382828-6202-11D1-8870-0000F87579D2}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ldm\\modules\\diffusionmodules\\openaimodel.py||{8B382828-6202-11D1-8870-0000F87579D2}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|c:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\text_to_image\\StableDiffusionText2Img\\ldm\\models\\diffusion\\ddim.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ldm\\models\\diffusion\\ddim.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{126B01FC-6D82-4009-A3AF-48D1E874631D}|StableDiffusionText2Img.pyproj|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\text_to_image\\StableDiffusionText2Img\\StableDiffusionText2Img.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{126B01FC-6D82-4009-A3AF-48D1E874631D}|StableDiffusionText2Img.pyproj|solutionrelative:StableDiffusionText2Img.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 1498,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "openaimodel.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\text_to_image\\StableDiffusionText2Img\\ldm\\modules\\diffusionmodules\\openaimodel.py",
+              "RelativeDocumentMoniker": "ldm\\modules\\diffusionmodules\\openaimodel.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\text_to_image\\StableDiffusionText2Img\\ldm\\modules\\diffusionmodules\\openaimodel.py",
+              "RelativeToolTip": "ldm\\modules\\diffusionmodules\\openaimodel.py",
+              "ViewState": "AQIAADQAAAAAAAAAAAD4v1UAAAAaAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-12-25T00:22:35.13Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ddim.py",
+              "DocumentMoniker": "c:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\text_to_image\\StableDiffusionText2Img\\ldm\\models\\diffusion\\ddim.py",
+              "RelativeDocumentMoniker": "ldm\\models\\diffusion\\ddim.py",
+              "ToolTip": "c:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\text_to_image\\StableDiffusionText2Img\\ldm\\models\\diffusion\\ddim.py",
+              "RelativeToolTip": "ldm\\models\\diffusion\\ddim.py",
+              "ViewState": "AQIAAD4AAAAAAAAAAAAiwGQAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-12-24T19:49:32.774Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "StableDiffusionText2Img.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\text_to_image\\StableDiffusionText2Img\\StableDiffusionText2Img.py",
+              "RelativeDocumentMoniker": "StableDiffusionText2Img.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\text_to_image\\StableDiffusionText2Img\\StableDiffusionText2Img.py",
+              "RelativeToolTip": "StableDiffusionText2Img.py",
+              "ViewState": "AQIAAHwAAAAAAAAAAAAAAJkAAAAqAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-12-24T15:08:16.347Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

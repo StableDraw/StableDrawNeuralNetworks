@@ -347,7 +347,7 @@ def Stable_diffusion_upscaler(binary_data, prompt, opt):
         opt["steps"] += 1
     else:
         sampler = DDIMSampler(model)
-    sampler.make_schedule(ddim_num_steps = opt['steps'], ddim_eta = opt['ddim_eta'], verbose = opt["verbose"])
+    sampler.make_schedule(ddim_num_steps = opt["steps"], ddim_discretize = opt["ddim_discretize"], ddim_eta = opt["ddim_eta"], verbose = opt["verbose"])
     if isinstance(sampler.model, LatentUpscaleDiffusion):
         noise_level = torch.Tensor([opt["noise_augmentation"]]).to(sampler.model.device).long()
     sampler.make_schedule(opt["steps"], ddim_eta = opt["ddim_eta"], verbose = opt["verbose"])
@@ -491,7 +491,10 @@ class StableDiffusionLatentUpscalePipeline(DiffusionPipeline):
         if guidance_scale == 0:
             prompt = [""] * batch_size
         # 2. Кодирование входного описания
-        negative_prompt = opt["negative_prompt"]
+        if opt["negative_prompt"] == "":
+            negative_prompt = None
+        else:
+            negative_prompt = opt["negative_prompt"]
         text_embeddings, text_pooler_out = self._encode_prompt(prompt, device, do_classifier_free_guidance, negative_prompt)
         # 3. Обработка изображения
         image = torch.from_numpy(2.0 * (numpy.array(load_img(binary_data, opt["max_dim"])).astype(numpy.float32) / 255.0)[None].transpose(0, 3, 1, 2) - 1.)

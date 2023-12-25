@@ -1,0 +1,183 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{307335E0-EE7F-4464-ABA8-4BB1245F1E64}|Neural_network_processing.pyproj|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Neural_network_processing.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{307335E0-EE7F-4464-ABA8-4BB1245F1E64}|Neural_network_processing.pyproj|solutionrelative:Neural_network_processing.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|c:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Delete_background.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Delete_background.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|c:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Stable_diffusion.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Stable_diffusion.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|c:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\ldm\\models\\diffusion\\ddim.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ldm\\models\\diffusion\\ddim.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|c:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\RealESRGAN.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:RealESRGAN.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|c:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Image_\u0441olorization.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Image_\u0441olorization.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\realesrgan\\utils.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:realesrgan\\utils.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Translate.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Translate.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\stable_draw_grpc_pb2_grpc.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:stable_draw_grpc_pb2_grpc.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\INeural.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:INeural.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "RealESRGAN.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\RealESRGAN.py",
+              "RelativeDocumentMoniker": "RealESRGAN.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\RealESRGAN.py",
+              "RelativeToolTip": "RealESRGAN.py",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAACcAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-10-07T17:13:48.423Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Neural_network_processing.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Neural_network_processing.py",
+              "RelativeDocumentMoniker": "Neural_network_processing.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Neural_network_processing.py",
+              "RelativeToolTip": "Neural_network_processing.py",
+              "ViewState": "AQIAABEDAAAAAAAAAAAuwEYDAAAvAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-09-04T20:15:27.673Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ddim.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\ldm\\models\\diffusion\\ddim.py",
+              "RelativeDocumentMoniker": "ldm\\models\\diffusion\\ddim.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\ldm\\models\\diffusion\\ddim.py",
+              "RelativeToolTip": "ldm\\models\\diffusion\\ddim.py",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABYAAAAsAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-12-23T12:36:34.61Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Delete_background.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Delete_background.py",
+              "RelativeDocumentMoniker": "Delete_background.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Delete_background.py",
+              "RelativeToolTip": "Delete_background.py",
+              "ViewState": "AQIAAAIAAAAAAAAAAAAcwB0AAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-10-16T21:28:55.478Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Stable_diffusion.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Stable_diffusion.py",
+              "RelativeDocumentMoniker": "Stable_diffusion.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Stable_diffusion.py",
+              "RelativeToolTip": "Stable_diffusion.py",
+              "ViewState": "AQIAAEYBAAAAAAAAAAAIwF0BAABgAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-10-12T19:43:32.392Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Image_\u0441olorization.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Image_\u0441olorization.py",
+              "RelativeDocumentMoniker": "Image_\u0441olorization.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Image_\u0441olorization.py",
+              "RelativeToolTip": "Image_\u0441olorization.py",
+              "ViewState": "AQIAAGkBAAAAAAAAAAAowIQBAAAEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-10-12T19:41:54.719Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Translate.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Translate.py",
+              "RelativeDocumentMoniker": "Translate.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\Translate.py",
+              "RelativeToolTip": "Translate.py",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAABxAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-10-10T11:55:44.03Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "utils.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\realesrgan\\utils.py",
+              "RelativeDocumentMoniker": "realesrgan\\utils.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\realesrgan\\utils.py",
+              "RelativeToolTip": "realesrgan\\utils.py",
+              "ViewState": "AQIAAK0AAAAAAAAAAAAAAMIAAAAGAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-10-10T01:54:50.182Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "stable_draw_grpc_pb2_grpc.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\stable_draw_grpc_pb2_grpc.py",
+              "RelativeDocumentMoniker": "stable_draw_grpc_pb2_grpc.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\stable_draw_grpc_pb2_grpc.py",
+              "RelativeToolTip": "stable_draw_grpc_pb2_grpc.py",
+              "ViewState": "AQIAAOMAAAAAAAAAAAAAAPUAAAAYAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-10-07T17:14:33.29Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "INeural.py",
+              "DocumentMoniker": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\INeural.py",
+              "RelativeDocumentMoniker": "INeural.py",
+              "ToolTip": "C:\\StableDraw\\StableDrawNeuralNetworks\\Neural_network_processing\\INeural.py",
+              "RelativeToolTip": "INeural.py",
+              "ViewState": "AQIAAFMAAAAAAAAAAAAAAFMAAAAYAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2023-10-07T17:14:09.372Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

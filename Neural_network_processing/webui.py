@@ -31,6 +31,14 @@ def webui_text2img(caption: str, params: dict) -> bytes:
         "s_noise":1, #Только для обработчиков ("EulerEDMSampler" или "HeunEDMSampler" или "EulerAncestralSampler" или "DPMPP2SAncestralSampler") и "s_churn" > 0 (от 0.0)
     }
     '''
+    
+    del params['version']
+    sampler_name = params["sampler"]
+    del params['sampler']
+    params["sampler_name"] = sampler_name
+    
+    del params['custom_ckpt_name']
+    
     result = web_api.text2img(prompt=caption, **params)
     img_byte_arr = io.BytesIO()
     result.image.save(img_byte_arr, format='PNG')

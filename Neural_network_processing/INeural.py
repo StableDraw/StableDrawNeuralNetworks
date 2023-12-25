@@ -6,9 +6,9 @@ from Image_сolorization import Image_сolorizer
 from Image_caption_generator import Gen_caption
 from Delete_background import U2NET_Delete_background
 from Delete_background import DIS_Delete_background
-from RealESRGAN import RealESRGAN_upscaler
-from Stable_diffusion import Stable_diffusion_upscaler
-from Stable_diffusion import Stable_diffusion_upscaler_xX
+from upscaler.MultichannelRealESRGAN.RealESRGAN import RealESRGAN_upscaler
+from upscaler.StableDiffusionx4Upscaler.StableDiffusionUpscaler import Stable_diffusion_upscaler
+from upscaler.StableDiffusionx2LatentUpscaler.StableDiffusionx2LatentUpscaler import Stable_diffusion_upscaler_xX
 from Stable_diffusionXL import Stable_diffusion_XL_image_to_image
 from Kandinsky_2 import Kandinsky2_text_to_image
 from Stable_diffusion import Stable_diffusion_text_to_image as Stable_diffusion_2_0_text_to_image
@@ -91,9 +91,11 @@ def upscaler(init_img_binary_data: bytes, caption: Optional[str], params: dict) 
         "tile_pad": 10,                         #Заполнение плитки
         "pre_pad": 0,                           #Предварительный размер заполнения на каждой границе
         "face_enhance": False,                  #Использовать GFPGAN улучшения лиц
+        "version": "RestoreFormer_GFPGAN",      #Версия модели для улучшения лиц. Только для моделей семейства RealESRGAN, если выбран "face_enhance: True. Возможне значения: "1.1", "1.2", "1.3", "1.4", "RestoreFormerGFPGAN", "RestoreFormer". Модель 1.1 тестовая, но способна колоризировать. Модель 1.2 обучена на большем количестве данных с предобработкой, не способна колоризировать, генерирует достаточно чёткие изображения с красивым магияжем, однако иногда результат генерации выглядит не натурально. Модель 1.3 основана на модели 1.2, генерирует более натурально выглядящие изображения, однако не такие чёткие, выдаёт лучие результаты на более низкокачественных изображениях, работает с относительно высококачественными изображениями, может иметь повторяющееся (дважды) восстановление. Модель 1.4 обеспечивает немного больше деталей и лучшую идентичность. Модель RestoreFormer создана специально для улучшения лиц, "RestoreFormer_GFPGAN" обеспечивает более чёткую, однако менее натуралистичную обработку и иногда создаёт артифакты.
+        "input_is_latent": True,                #Скрытый ли вход. Только для моделей семейства RealESRGAN, если выбран "face_enhance: True и "version" от 1.1 до 1.4. Если выбран, то результат менее насыщенный и чёткий, но более наруральный
         "fp32": True,                           #Использовать точность fp32 во время вывода. По умолчанию fp16 (половинная точность)
         "alpha_upsampler": "realesrgan",        #Апсемплер для альфа-каналов. Варианты: realesrgan | bicubic
-        "gpu-id": None                          #Устройство gpu для использования (по умолчанию = None) может быть 0, 1, 2 для обработки на нескольких GPU
+        "gpu-id": 0                             #Устройство gpu для использования (по умолчанию = 0) может быть 0, 1, 2 для обработки на нескольких GPU
     }
     '''
     if params["model"] == "StableDiffusionx4Upscaler":

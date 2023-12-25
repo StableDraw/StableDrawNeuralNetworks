@@ -579,7 +579,7 @@ async def neural_processing(process, nprocess):
                         "noise_augmentation": 20,               #от 0 до 350
                         "negative_prompt": None,                #отрицательное описание (если без него, то None)
                         "verbose": False,
-                        "max_dim": pow(1024, 2)                  #я не могу генерировать на своей видюхе картинки больше 512 на 512 для x4 и 512 на 512 для x2
+                        "max_dim": pow(1024, 2)                 #я не могу генерировать на своей видюхе картинки больше 512 на 512 для x4 и 512 на 512 для x2
                     }
                     outscale = params["outscale"]
                     if need_restore:
