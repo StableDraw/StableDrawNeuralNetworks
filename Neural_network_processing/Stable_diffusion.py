@@ -17,7 +17,8 @@ from ldm.models.diffusion.ddpm import LatentUpscaleDiffusion, LatentUpscaleFinet
 from transformers import CLIPTextModel, CLIPTokenizer
 from diffusers.models import AutoencoderKL, UNet2DConditionModel
 from diffusers.schedulers import EulerDiscreteScheduler
-from diffusers.utils import is_accelerate_available, randn_tensor
+from diffusers.utils import is_accelerate_available
+from diffusers.utils.torch_utils import randn_tensor
 from diffusers.pipelines.pipeline_utils import DiffusionPipeline
 
 def chunk(it, size):

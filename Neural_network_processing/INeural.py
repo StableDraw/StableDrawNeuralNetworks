@@ -6,9 +6,14 @@ from Image_сolorization import Image_сolorizer
 from Image_caption_generator import Gen_caption
 from Delete_background import U2NET_Delete_background
 from Delete_background import DIS_Delete_background
-from upscaler.MultichannelRealESRGAN.RealESRGAN import RealESRGAN_upscaler
-from upscaler.StableDiffusionx4Upscaler.StableDiffusionUpscaler import Stable_diffusion_upscaler
-from upscaler.StableDiffusionx2LatentUpscaler.StableDiffusionx2LatentUpscaler import Stable_diffusion_upscaler_xX
+
+#from upscaler.MultichannelRealESRGAN.RealESRGAN import RealESRGAN_upscaler
+#from upscaler.StableDiffusionx4Upscaler.StableDiffusionUpscaler import Stable_diffusion_upscaler
+#from upscaler.StableDiffusionx2LatentUpscaler.StableDiffusionx2LatentUpscaler import Stable_diffusion_upscaler_xX
+from RealESRGAN import RealESRGAN_upscaler
+from Stable_diffusion import Stable_diffusion_upscaler
+from Stable_diffusion import Stable_diffusion_upscaler_xX
+
 from Stable_diffusionXL import Stable_diffusion_XL_image_to_image
 from Kandinsky_2 import Kandinsky2_text_to_image
 from Stable_diffusion import Stable_diffusion_text_to_image as Stable_diffusion_2_0_text_to_image
@@ -251,12 +256,13 @@ def text_to_image(caption: str, params: dict) -> List[bytes]:
     # params["version"] = "SDXL-base-1.0"
     if params["version"] == "SD-2.0":
         binary_data_list = [Stable_diffusion_2_0_text_to_image(caption, params)]
-    elif "Kandinsky" in params["version"]:
-        binary_data_list = Kandinsky2_text_to_image(caption, params)
-    elif "webui_text2img" in params["version"]:
-        binary_data_list = webui_text2img(caption, params)   
+    #elif "Kandinsky" in params["version"]:
+        #binary_data_list = Kandinsky2_text_to_image(caption, params)
+    #elif "webui_text2img" in params["version"]:
+        #binary_data_list = webui_text2img(caption, params)   
     else:
-        binary_data_list = Stable_diffusion_XL_text_to_image(caption, params)
+        binary_data_list = [webui_text2img(caption, params)]  
+        #binary_data_list = Stable_diffusion_XL_text_to_image(caption, params)
         # with open("C:\\Users\\Robolightning\\Desktop\\cow.png", "wb") as f:
         #     f.write(binary_data_list[0])
     # '''

@@ -32,14 +32,15 @@ def webui_text2img(caption: str, params: dict) -> bytes:
     }
     '''
     
-    del params['version']
-    sampler_name = params["sampler"]
-    del params['sampler']
-    params["sampler_name"] = sampler_name
     
-    del params['custom_ckpt_name']
+
+
+    params_1 = {"seed" : params["seed"],
+                "negative_prompt" : params["negative_prompt"],
+                "steps" : params["steps"],
+                "sampler_name" : params["sampler"]}
     
-    result = web_api.text2img(prompt=caption, **params)
+    result = web_api.text2img(prompt=caption, **params_1)
     img_byte_arr = io.BytesIO()
     result.image.save(img_byte_arr, format='PNG')
     binary_data = img_byte_arr.getvalue()
