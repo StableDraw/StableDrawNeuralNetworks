@@ -7,3 +7,6 @@
 [submodule "Neural_network_processing/upscaler/StableDiffusionx2LatentUpscaler"]
 	path = Neural_network_processing/upscaler/StableDiffusionx2LatentUpscaler
 	url = https://github.com/Robolightning/StableDiffusionx2LatentUpscaler
+[submodule "Neural_network_processing/text_to_image/StableDiffusionText2Img"]
+	path = Neural_network_processing/text_to_image/StableDiffusionText2Img
+	url = https://github.com/Robolightning/StableDiffusionText2Img
