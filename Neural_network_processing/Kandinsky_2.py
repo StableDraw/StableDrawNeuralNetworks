@@ -86,7 +86,7 @@ def get_kandinsky2(device, task_type = "text2img", use_auth_token = None, model_
 
 def Kandinsky2_text_to_image(prompt, opt):
     if opt["low_vram_mode"] == True:
-        device = "cpu"
+        device = torch.device("cpu")
     else:
         device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     if opt["version"] == "Kandinsky2.0":
