@@ -13,3 +13,6 @@
 [submodule "Neural_network_processing/text_to_image/KandinskyText2Img"]
 	path = Neural_network_processing/text_to_image/KandinskyText2Img
 	url = https://github.com/Robolightning/KandinskyText2Img
+[submodule "Neural_network_processing/text_to_image/StableDiffusionXLText2Img"]
+	path = Neural_network_processing/text_to_image/StableDiffusionXLText2Img
+	url = https://github.com/Robolightning/StableDiffusionXLText2Img
