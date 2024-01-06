@@ -16,6 +16,7 @@
 [submodule "StableDiffusionXL"]
 	path = StableDiffusionXL
 	url = https://github.com/Stability-AI/generative-models
+	
 [submodule "Neural_network_processing/upscaler/StableDiffusionx4Upscaler"]
 	path = Neural_network_processing/upscaler/StableDiffusionx4Upscaler
 	url = https://github.com/StableDraw/StableDiffusionx4Upscaler
