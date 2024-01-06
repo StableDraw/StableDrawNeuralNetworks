@@ -18,4 +18,4 @@
 	url = https://github.com/StableDraw/StableDiffusionx4Upscaler
 [submodule "Neural_network_processing/text_to_image/KandinskyText2Img"]
 	path = Neural_network_processing/text_to_image/KandinskyText2Img
-	url = https://github.com/StableDraw/KandinskyText2Img
+	url = https://github.com/Robolightning/KandinskyText2Img
