@@ -4,9 +4,6 @@
 [submodule "Neural_network_processing/upscaler/StableDiffusionx2LatentUpscaler"]
 	path = Neural_network_processing/upscaler/StableDiffusionx2LatentUpscaler
 	url = https://github.com/StableDraw/StableDiffusionx2LatentUpscaler
-[submodule "Neural_network_processing/text_to_image/StableDiffusionXLText2Img"]
-	path = Neural_network_processing/text_to_image/StableDiffusionXLText2Img
-	url = https://github.com/StableDraw/StableDiffusionXLText2Img
 [submodule "StableDiffusionXL"]
 	path = StableDiffusionXL
 	url = https://github.com/Stability-AI/generative-models
@@ -19,3 +16,6 @@
 [submodule "Neural_network_processing/text_to_image/StableDiffusionText2Img"]
 	path = Neural_network_processing/text_to_image/StableDiffusionText2Img
 	url = https://github.com/StableDraw/StableDiffusionText2Img
+[submodule "Neural_network_processing/text_to_image/StableDiffusionXLText2Img"]
+	path = Neural_network_processing/text_to_image/StableDiffusionXLText2Img
+	url = https://github.com/StableDraw/StableDiffusionXLText2Img
