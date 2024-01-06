@@ -1,9 +1,6 @@
 [submodule "Neural_network_processing/upscaler/MultichannelRealESRGAN"]
 	path = Neural_network_processing/upscaler/MultichannelRealESRGAN
 	url = https://github.com/StableDraw/Multichannel-Real-ESRGAN
-[submodule "Neural_network_processing/upscaler/StableDiffusionx4Upscaler"]
-	path = Neural_network_processing/upscaler/StableDiffusionx4Upscaler
-	url = https://github.com/StableDraw/StableDiffusionx4Upscaler
 [submodule "Neural_network_processing/upscaler/StableDiffusionx2LatentUpscaler"]
 	path = Neural_network_processing/upscaler/StableDiffusionx2LatentUpscaler
 	url = https://github.com/StableDraw/StableDiffusionx2LatentUpscaler
@@ -19,3 +16,6 @@
 [submodule "StableDiffusionXL"]
 	path = StableDiffusionXL
 	url = https://github.com/Stability-AI/generative-models
+[submodule "Neural_network_processing/upscaler/StableDiffusionx4Upscaler"]
+	path = Neural_network_processing/upscaler/StableDiffusionx4Upscaler
+	url = https://github.com/StableDraw/StableDiffusionx4Upscaler
