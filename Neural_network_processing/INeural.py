@@ -7,10 +7,15 @@ from Image_caption_generator import Gen_caption
 from Delete_background import U2NET_Delete_background
 from Delete_background import DIS_Delete_background
 
+
+
 #from upscaler.MultichannelRealESRGAN.RealESRGAN import RealESRGAN_upscaler
+
+
+
 #from upscaler.StableDiffusionx4Upscaler.StableDiffusionUpscaler import Stable_diffusion_upscaler
 #from upscaler.StableDiffusionx2LatentUpscaler.StableDiffusionx2LatentUpscaler import Stable_diffusion_upscaler_xX
-from RealESRGAN import RealESRGAN_upscaler
+#from RealESRGAN import RealESRGAN_upscaler
 from Stable_diffusion import Stable_diffusion_upscaler
 from Stable_diffusion import Stable_diffusion_upscaler_xX
 
@@ -107,8 +112,10 @@ def upscaler(init_img_binary_data: bytes, caption: Optional[str], params: dict) 
         binary_data = Stable_diffusion_upscaler(init_img_binary_data, caption, params)
     elif params["model"] == "StableDiffusionxLatentx2Upscaler":
         binary_data = Stable_diffusion_upscaler_xX(init_img_binary_data, caption, params)
+        '''
     elif "REALESR" in params["model"].upper():
         binary_data = RealESRGAN_upscaler(init_img_binary_data, params) #передаю путь к рабочей папке
+        '''
     elif params["model"] == "webui_upscaler":
         binary_data = webui_upscaler(init_img_binary_data, params)
     else:

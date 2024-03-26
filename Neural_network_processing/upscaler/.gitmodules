@@ -1,0 +1,9 @@
+[submodule "MultichannelRealESRGAN"]
+	path = MultichannelRealESRGAN
+	url = https://github.com/StableDraw/MultichannelRealESRGAN
+[submodule "StableDiffusionx2LatentUpscaler"]
+	path = StableDiffusionx2LatentUpscaler
+	url = https://github.com/StableDraw/StableDiffusionx2LatentUpscaler
+[submodule "StableDiffusionx4Upscaler"]
+	path = StableDiffusionx4Upscaler
+	url = https://github.com/StableDraw/StableDiffusionx4Upscaler
