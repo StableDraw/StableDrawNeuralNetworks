@@ -10,3 +10,6 @@
 [submodule "Neural_network_processing/upscaler"]
 	path = Neural_network_processing/upscaler
 	url = https://github.com/StableDraw/upscaler
+[submodule "VideoN"]
+	path = VideoNN
+	url = https://github.com/StableDraw/VideoNN
